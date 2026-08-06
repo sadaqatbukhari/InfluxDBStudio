@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,6 +23,12 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
 
         // A cache of the last results received.
         InfluxDbSeries lastResult;
+
+        // ListView virtual mode asks for visible rows on demand. Keep only a small
+        // window of rendered controls while the complete result remains in memory.
+        const int VirtualPageSize = 256;
+        int cachedFirstIndex = -1;
+        ListViewItem[] cachedItems = Array.Empty<ListViewItem>();
 
         #endregion Fields
 
@@ -58,9 +65,9 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
         }
 
         // Export All -> JSON
-        private void jSONToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void jSONToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExportToJson();
+            await ExportToJson();
         }
 
         // Export Selected -> CSV
@@ -70,9 +77,22 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
         }
 
         // Export Selected -> JSON
-        private void jSONToolStripMenuItem1_Click(object sender, EventArgs e)
+        private async void jSONToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            ExportToJson(true);
+            await ExportToJson(true);
+        }
+
+        private void listView_CacheVirtualItems(object sender, CacheVirtualItemsEventArgs e)
+        {
+            CacheVirtualRows(e.StartIndex);
+        }
+
+        private void listView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        {
+            if (!IsRowCached(e.ItemIndex))
+                CacheVirtualRows(e.ItemIndex);
+
+            e.Item = cachedItems[e.ItemIndex - cachedFirstIndex];
         }
 
         #endregion Event Handlers
@@ -86,10 +106,12 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
         {
             // Clear out current items
             resultsCount = 0;
+            lastResult = null;
             tagsTextBox.Text = null;
             listView.BeginUpdate();
+            listView.VirtualListSize = 0;
             listView.Columns.Clear();
-            listView.Items.Clear();
+            ResetVirtualCache();
             listView.EndUpdate();
         }
 
@@ -102,11 +124,13 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
         {
             if (result == null) throw new ArgumentNullException("result");
 
-            // Cache
-            lastResult = result;
-
             // Clear as needed
             if (clear) ClearResults();
+
+            // Cache the data only. Rows are materialized by ListView virtual mode
+            // when they enter the visible scrolling window.
+            lastResult = result;
+            resultsCount = result.Values.Count;
 
             // Add tag values to to results
             if (result.Tags.Count > 0)
@@ -131,6 +155,9 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
 
             // Start to update the list view with the new results
             listView.BeginUpdate();
+            listView.VirtualListSize = 0;
+            listView.Columns.Clear();
+            ResetVirtualCache();
 
             // Build the first column
             var colRecordNum = new ColumnHeader() { Text = "#" };
@@ -144,29 +171,6 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
                 listView.Columns.Add(col);
             }
 
-            // Build the rows
-            for (var i = 0; i < result.Values.Count; i++)
-            {
-                // Create the top level row item and give it the record number as a label
-                ListViewItem li = new ListViewItem((++resultsCount).ToString());
-                listView.Items.Add(li);
-
-                // Get the columns/values for the row
-                var r = result.Values[i];
-
-                for (var x = 0; x < r.Count; x++)
-                {
-                    // Get the value
-                    var v = r[x];
-
-                    // Attach the column values as subitems
-                    var columnName = x < result.Columns.Count ? result.Columns[x] : null;
-                    var li2 = new ListViewItem.ListViewSubItem(li, FormatOutputValue(columnName, v));
-                    li2.Tag = r;
-                    li.SubItems.Add(li2);
-                }
-            }
-
             // Resize each column
             if (listView.Columns.Count > 0)
             {
@@ -175,9 +179,59 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
                 foreach (ColumnHeader col in listView.Columns) col.Width = columnWidth;
             }
 
+            listView.VirtualListSize = resultsCount;
             listView.EndUpdate();
 
             return resultsCount;
+        }
+
+        private void CacheVirtualRows(int requestedIndex)
+        {
+            if (lastResult == null || lastResult.Values.Count == 0)
+            {
+                ResetVirtualCache();
+                return;
+            }
+
+            var pageStart = Math.Max(0, requestedIndex) / VirtualPageSize * VirtualPageSize;
+            var firstIndex = Math.Max(0, pageStart - VirtualPageSize);
+            var lastIndex = Math.Min(lastResult.Values.Count - 1,
+                pageStart + (VirtualPageSize * 2) - 1);
+
+            cachedFirstIndex = firstIndex;
+            cachedItems = new ListViewItem[lastIndex - firstIndex + 1];
+            for (var index = firstIndex; index <= lastIndex; index++)
+                cachedItems[index - firstIndex] = CreateVirtualItem(index);
+        }
+
+        private ListViewItem CreateVirtualItem(int rowIndex)
+        {
+            var row = lastResult.Values[rowIndex];
+            var item = new ListViewItem((rowIndex + 1).ToString(CultureInfo.InvariantCulture));
+
+            for (var columnIndex = 0; columnIndex < row.Count; columnIndex++)
+            {
+                var columnName = columnIndex < lastResult.Columns.Count
+                    ? lastResult.Columns[columnIndex]
+                    : null;
+                item.SubItems.Add(FormatOutputValue(columnName, row[columnIndex]));
+            }
+
+            item.Tag = row;
+            return item;
+        }
+
+        private bool IsRowCached(int rowIndex)
+        {
+            return cachedFirstIndex >= 0
+                && rowIndex >= cachedFirstIndex
+                && rowIndex < cachedFirstIndex + cachedItems.Length;
+        }
+
+        private void ResetVirtualCache()
+        {
+            cachedFirstIndex = -1;
+            cachedItems = Array.Empty<ListViewItem>();
         }
 
         private static string FormatOutputValue(string columnName, object value)
@@ -215,43 +269,34 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
                 saveFileDialog.FileName = string.Format("{0}.csv", InfluxDbClient.Connection.Name + "_" + Database);
                 saveFileDialog.Filter = "CSV files|*.csv|All files|*.*";
 
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                if (saveFileDialog.ShowDialog() != DialogResult.OK || lastResult == null) return;
+
+                var result = lastResult;
+                var selectedRows = GetSelectedRowIndices();
+                var fileName = saveFileDialog.FileName;
+
+                await Task.Run(() =>
                 {
-                    var sb = new StringBuilder();
-
-                    // Create a stream writer to write the CSV file
-                    using (var sw = new StreamWriter(saveFileDialog.FileName))
+                    using (var writer = new StreamWriter(fileName, false, new UTF8Encoding(false)))
                     {
-                        sb.Clear();
+                        writer.WriteLine(string.Join(",", result.Columns.Select(EscapeCsv)));
 
-                        // Write the CSV column names (skip first column which is just row # label)
-                        for (var i = 1; i < listView.Columns.Count; i++)
+                        for (var rowIndex = 0; rowIndex < result.Values.Count; rowIndex++)
                         {
-                            sb.Append(listView.Columns[i].Text);
-                            if (i < listView.Columns.Count - 1) sb.Append(",");
-                        }
+                            if (onlySelected && !selectedRows.Contains(rowIndex)) continue;
 
-                        await sw.WriteLineAsync(sb.ToString());
-
-                        // Now write each series row
-                        foreach (ListViewItem li in listView.Items)
-                        {
-                            if (onlySelected && !li.Selected) continue;
-
-                            sb.Clear();
-
-                            // (skip first column which is just row # label)
-                            for (var i = 1; i < li.SubItems.Count; i++)
+                            var row = result.Values[rowIndex];
+                            var values = new string[result.Columns.Count];
+                            for (var columnIndex = 0; columnIndex < values.Length; columnIndex++)
                             {
-                                var sli = li.SubItems[i];
-                                sb.Append(sli.Text);
-                                if (i < li.SubItems.Count - 1) sb.Append(",");
+                                var value = columnIndex < row.Count ? row[columnIndex] : null;
+                                values[columnIndex] = EscapeCsv(FormatOutputValue(
+                                    result.Columns[columnIndex], value));
                             }
-
-                            await sw.WriteLineAsync(sb.ToString());
+                            writer.WriteLine(string.Join(",", values));
                         }
                     }
-                }
+                });
             }
             catch (Exception ex)
             {
@@ -259,8 +304,9 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
             }
         }
 
-        // Exports series data to a JSON array
-        void ExportToJson(bool onlySelected = false)
+        // Streams series data to a JSON array without constructing a second copy
+        // of the entire result set in memory.
+        async Task ExportToJson(bool onlySelected = false)
         {
             try
             {
@@ -268,66 +314,56 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
                 saveFileDialog.FileName = string.Format("{0}.json", InfluxDbClient.Connection.Name + "_" + Database);
                 saveFileDialog.Filter = "JSON files|*.json|All files|*.*";
 
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                if (saveFileDialog.ShowDialog() != DialogResult.OK || lastResult == null) return;
+
+                var result = lastResult;
+                var selectedRows = GetSelectedRowIndices();
+                var fileName = saveFileDialog.FileName;
+
+                await Task.Run(() =>
                 {
-                    // Collect the list of points
-                    var array = new List<object>();
-
-                    if (lastResult != null)
+                    var serializer = JsonSerializer.CreateDefault();
+                    using (var streamWriter = new StreamWriter(fileName, false, new UTF8Encoding(false)))
+                    using (var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented })
                     {
-                        // Build name lookup
-                        var indexToName = new Dictionary<int, string>();
-
-                        foreach (var colName in lastResult.Columns)
+                        jsonWriter.WriteStartArray();
+                        for (var rowIndex = 0; rowIndex < result.Values.Count; rowIndex++)
                         {
-                            if (!indexToName.ContainsKey(indexToName.Count))
-                                indexToName.Add(indexToName.Count, colName);
-                        }
+                            if (onlySelected && !selectedRows.Contains(rowIndex)) continue;
 
-                        // Build selected states from UI state
-                        var selectedByRowId = new Dictionary<int, bool>();
-
-                        for (var i = 0; i < listView.Items.Count; i++)
-                        {
-                            var li = listView.Items[i];
-                            selectedByRowId.Add(i, li.Selected);
-                        }
-
-                        // Convert results to JSON for export
-                        for (var i = 0; i < lastResult.Values.Count; i++)
-                        {
-                            var r = lastResult.Values[i];
-
-                            if (onlySelected && !selectedByRowId[i]) continue;
-
-                            // Convert to outgoing dictionary
-                            var d = new Dictionary<string, object>();
-
-                            for (var x = 0; x < r.Count; x++)
+                            var row = result.Values[rowIndex];
+                            var item = new Dictionary<string, object>();
+                            for (var columnIndex = 0;
+                                columnIndex < result.Columns.Count && columnIndex < row.Count;
+                                columnIndex++)
                             {
-                                var key = indexToName[x];
-                                var value = r[x];
-
-                                if (d.ContainsKey(key)) d[key] = value;
-                                else d.Add(key, value);
+                                item[result.Columns[columnIndex]] = row[columnIndex];
                             }
-
-                            // Add to outgoing json structure
-                            array.Add(d);
+                            serializer.Serialize(jsonWriter, item);
                         }
+                        jsonWriter.WriteEndArray();
                     }
-
-                    // Serialize to json
-                    var json = JsonConvert.SerializeObject(array, Formatting.Indented);
-
-                    // Write to disk
-                    File.WriteAllText(saveFileDialog.FileName, json);
-                }
+                });
             }
             catch (Exception ex)
             {
                 AppForm.DisplayException(ex);
             }
+        }
+
+        private HashSet<int> GetSelectedRowIndices()
+        {
+            var selectedRows = new HashSet<int>();
+            foreach (int index in listView.SelectedIndices)
+                selectedRows.Add(index);
+            return selectedRows;
+        }
+
+        private static string EscapeCsv(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return string.Empty;
+            if (value.IndexOfAny(new[] { ',', '"', '\r', '\n' }) < 0) return value;
+            return "\"" + value.Replace("\"", "\"\"") + "\"";
         }
 
         #endregion Methods

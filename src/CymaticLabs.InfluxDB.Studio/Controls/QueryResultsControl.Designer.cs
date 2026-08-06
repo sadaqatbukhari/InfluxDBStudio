@@ -61,6 +61,9 @@
             this.listView.TabIndex = 0;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
+            this.listView.VirtualMode = true;
+            this.listView.CacheVirtualItems += new System.Windows.Forms.CacheVirtualItemsEventHandler(this.listView_CacheVirtualItems);
+            this.listView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listView_RetrieveVirtualItem);
             // 
             // contextMenuStrip
             // 
