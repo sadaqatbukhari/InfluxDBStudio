@@ -12,6 +12,8 @@ namespace CymaticLabs.InfluxDB.Studio.Dialogs
     {
         #region Fields
 
+        private bool changingServerVersion;
+
         #endregion Fields
 
         #region Properties
@@ -91,6 +93,30 @@ namespace CymaticLabs.InfluxDB.Studio.Dialogs
             set { useSsl.Checked = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the selected InfluxDB server generation.
+        /// </summary>
+        public InfluxDbServerVersion ServerVersion
+        {
+            get { return (InfluxDbServerVersion)serverVersion.SelectedValue; }
+            set
+            {
+                changingServerVersion = true;
+                serverVersion.SelectedValue = value;
+                changingServerVersion = false;
+                UpdateAuthenticationFields(false);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the InfluxDB 3 bearer token.
+        /// </summary>
+        public string Token
+        {
+            get { return password.Text; }
+            set { password.Text = value; }
+        }
+
         #endregion Properties
 
         #region Constructors
@@ -98,6 +124,18 @@ namespace CymaticLabs.InfluxDB.Studio.Dialogs
         public ConnectionDialog()
         {
             InitializeComponent();
+            serverVersion.DisplayMember = "Text";
+            serverVersion.ValueMember = "Value";
+            serverVersion.DataSource = new[]
+            {
+                new { Text = "InfluxDB 1.x", Value = InfluxDbServerVersion.InfluxDb1 },
+                new { Text = "InfluxDB 3.x", Value = InfluxDbServerVersion.InfluxDb3 }
+            };
+            serverVersion.SelectedValueChanged += delegate
+            {
+                if (!changingServerVersion) UpdateAuthenticationFields(true);
+            };
+            ServerVersion = InfluxDbServerVersion.InfluxDb1;
         }
 
         #endregion Constructors
@@ -169,6 +207,7 @@ namespace CymaticLabs.InfluxDB.Studio.Dialogs
             Username = null;
             Password = null;
             UseSsl = false;
+            ServerVersion = InfluxDbServerVersion.InfluxDb1;
         }
 
         /// <summary>
@@ -188,6 +227,8 @@ namespace CymaticLabs.InfluxDB.Studio.Dialogs
             Username = connection.Username;
             Password = connection.Password;
             UseSsl = connection.UseSsl;
+            ServerVersion = connection.ServerVersion;
+            if (connection.ServerVersion == InfluxDbServerVersion.InfluxDb3) Token = connection.Token;
         }
 
         /// <summary>
@@ -197,7 +238,9 @@ namespace CymaticLabs.InfluxDB.Studio.Dialogs
         public InfluxDbConnection CreateConnection()
         {
             return new InfluxDbConnection(Guid.NewGuid().ToString(), ConnectionName, Host, 
-                (ushort)Port, Username, Password, UseSsl, Database);
+                (ushort)Port, Username, ServerVersion == InfluxDbServerVersion.InfluxDb1 ? Password : null,
+                UseSsl, Database, ServerVersion,
+                ServerVersion == InfluxDbServerVersion.InfluxDb3 ? Token : null);
         }
 
         /// <summary>
@@ -216,6 +259,31 @@ namespace CymaticLabs.InfluxDB.Studio.Dialogs
             connection.Username = Username;
             connection.Password = Password;
             connection.UseSsl = UseSsl;
+            connection.ServerVersion = ServerVersion;
+            connection.Token = ServerVersion == InfluxDbServerVersion.InfluxDb3 ? Token : null;
+            if (ServerVersion == InfluxDbServerVersion.InfluxDb3)
+            {
+                connection.Username = null;
+                connection.Password = null;
+            }
+        }
+
+        private void UpdateAuthenticationFields(bool updateDefaultPort)
+        {
+            if (serverVersion.SelectedValue == null) return;
+
+            var isV3 = ServerVersion == InfluxDbServerVersion.InfluxDb3;
+            username.Visible = !isV3;
+            usernameLabel.Visible = !isV3;
+            passwordLabel.Text = isV3 ? "API Token:" : "Password:";
+            databaseInstructions.Text = isV3
+                ? "Optionally specify a database. An admin token can discover all databases."
+                : "Optionally specify the name of a single database to connect to.\r\nThis can be useful when you don't have admin privileges to list databases.";
+            if (updateDefaultPort)
+            {
+                if (isV3 && Port == 8086) Port = 8181;
+                if (!isV3 && Port == 8181) Port = 8086;
+            }
         }
 
         #endregion Methods

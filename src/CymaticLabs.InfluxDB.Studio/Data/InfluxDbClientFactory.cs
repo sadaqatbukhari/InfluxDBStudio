@@ -30,8 +30,9 @@ namespace CymaticLabs.InfluxDB.Data
         {
             if (connection == null) throw new ArgumentNullException("connection");
 
-            // TODO Support config/dependency injected concrete client type
-            return new InfluxDataNetClient(connection);
+            return connection.ServerVersion == InfluxDbServerVersion.InfluxDb3
+                ? (InfluxDbClient)new InfluxDb3Client(connection)
+                : new OfficialInfluxDb1Client(connection);
         }
 
         #endregion Methods

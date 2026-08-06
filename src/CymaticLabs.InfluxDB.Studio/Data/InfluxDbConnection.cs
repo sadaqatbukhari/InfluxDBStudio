@@ -50,6 +50,17 @@ namespace CymaticLabs.InfluxDB.Data
         public string Password { get; set; }
 
         /// <summary>
+        /// Gets or sets the bearer token used by InfluxDB 3.x.
+        /// </summary>
+        public string Token { get; set; }
+
+        /// <summary>
+        /// Gets or sets the InfluxDB server generation.
+        /// Existing saved connections default to InfluxDB 1.x.
+        /// </summary>
+        public InfluxDbServerVersion ServerVersion { get; set; }
+
+        /// <summary>
         /// Gets whether or not to use SSL to communicate with the InfluxDB server.
         /// </summary>
         public bool UseSsl { get; set; }
@@ -83,7 +94,8 @@ namespace CymaticLabs.InfluxDB.Data
         /// <param name="useSsl">Whether or not to use SSL to communicate with the InfluxDB server.</param>
         /// <param name="database">The name of the preferred database to use (optional).</param>
         public InfluxDbConnection(string id, string name, string host, ushort port, 
-            string username, string password, bool useSsl = true, string database = null)
+            string username, string password, bool useSsl = true, string database = null,
+            InfluxDbServerVersion serverVersion = InfluxDbServerVersion.InfluxDb1, string token = null)
         {
             Id = id;
             Name = name;
@@ -93,6 +105,8 @@ namespace CymaticLabs.InfluxDB.Data
             Password = password;
             UseSsl = useSsl;
             Database = database;
+            ServerVersion = serverVersion;
+            Token = token;
         }
 
         #endregion Constructors

@@ -2,9 +2,9 @@
 **InfluxDB Studio is a UI management tool for [the InfluxDB time series database](https://www.influxdata.com/time-series-platform/influxdb/).**
 
 Its inspiration comes from other similar database management tools such as [SQL Server Management Studio](https://en.wikipedia.org/wiki/SQL_Server_Management_Studio)
-and [Robomongo](https://robomongo.org/). Under the hood it's powered by [InfluxData.Net](https://github.com/pootzko/InfluxData.Net)
-which is a portable InfluxDB client library for .NET (plus some [Kapacitor](https://www.influxdata.com/time-series-platform/kapacitor/) support).
-InfluxDB Studio presently implements interfaces and workflows for most of the InfluxData.Net API.
+and [Robomongo](https://robomongo.org/). InfluxDB Studio supports both InfluxDB 1.x and InfluxDB 3.x.
+The 1.x integration uses InfluxData's official `InfluxDB.Client` package, while the 3.x
+integration uses the official `InfluxDB3.Client` package.
 
 The following are planned features that are not yet implemented in the current version:
 
@@ -54,7 +54,11 @@ The following are planned features that are not yet implemented in the current v
 
 Binary releases can be found [here](https://github.com/CymaticLabs/InfluxDBStudio/releases).
 
-You can build locally by downloading the source or cloning the repository. Eventually some binary releases might be included with the repository going forward. To build, you will need [Visual Studio 2015](https://www.visualstudio.com/downloads/). Building with Mono might be possible with additional steps but it's not clear how usable it will be. The Mac OS X version definitely has some issues. For now, Windows is the recommended platform to use.
+You can build locally on Windows with the .NET 10 SDK:
+
+```powershell
+dotnet build CymaticLabs.InfluxDB.sln
+```
 
 Open the solution file `CymaticLabs.InfluxDB.sln` to get started.
 
@@ -71,11 +75,18 @@ Press the **Create** button to add your first InfluxDB connection using the **Co
 Use the Connection Settings dialog to configure the details of the InfluxDB connection:
 
  * **Name** - The name of the connection. This is the label you will see when working with this connection.
+ * **Version** - Select **InfluxDB 1.x** or **InfluxDB 3.x**.
  * **Address** - The InfluxDB server's host URI. Exclude protocol information. **Port** is filled in to the right.
  * **Database** - The database to use for the connection. Leave this blank to list all databases _(requires admin privileges)_.
- * **Username** - The InfluxDB username to use with the connection.
- * **Password** - The InfluxDB password to use with the connection.
+ * **Username / Password** - Credentials for an InfluxDB 1.x connection.
+ * **API Token** - Bearer token for an InfluxDB 3.x connection.
  * **Use SSL** - Whether or not to use SSL security (HTTPS) when connecting to InfluxDB.
+
+InfluxDB 1.x defaults to port `8086`; InfluxDB 3.x defaults to port `8181`.
+InfluxDB 3 connections use SQL for queries. Database and table browsing, database creation/deletion,
+tag and field discovery, table deletion, queries, writes, and health checks are supported.
+InfluxDB 1.x-only commands (users and privileges, continuous queries, retention policies,
+server diagnostics/statistics, and `SHOW SERIES`) are disabled for 3.x connections.
 
 ![Create/Edit Connection Dialog](docs/img/ConnectionsDialog_1.png?raw=true "Create/Edit Connection Dialog")
 

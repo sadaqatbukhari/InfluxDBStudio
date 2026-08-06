@@ -199,6 +199,34 @@ namespace CymaticLabs.InfluxDB.Studio
             NewQuery(node);
         }
 
+        // Query -> Open Query
+        private void openQueryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var queryControl = GetCurrentQueryControl();
+                if (queryControl != null) queryControl.OpenQuery();
+            }
+            catch (Exception ex)
+            {
+                DisplayException(ex);
+            }
+        }
+
+        // Query -> Save Query
+        private void saveQueryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var queryControl = GetCurrentQueryControl();
+                if (queryControl != null) queryControl.SaveQuery();
+            }
+            catch (Exception ex)
+            {
+                DisplayException(ex);
+            }
+        }
+
         // Query -> Show Queries
         private async void showQueriesToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -638,6 +666,11 @@ namespace CymaticLabs.InfluxDB.Studio
         #endregion Connections Tree View
 
         #region Tab Control
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateUIState();
+        }
 
         // Handle user closing of tabs
         private void tabControl_TabClosed(object sender, TabPage e)
@@ -1484,7 +1517,9 @@ namespace CymaticLabs.InfluxDB.Studio
                 var queryControl = new QueryControl();
                 queryControl.InfluxDbClient = client;
                 queryControl.Database = database;
-                queryControl.EditorText = string.Format("SELECT * FROM \"{0}\" WHERE time > now() - 5m", measurement);
+                queryControl.EditorText = connection.ServerVersion == InfluxDbServerVersion.InfluxDb3
+                    ? string.Format("SELECT * FROM \"{0}\" WHERE time > now() - INTERVAL '5 minutes'", measurement)
+                    : string.Format("SELECT * FROM \"{0}\" WHERE time > now() - 5m", measurement);
 
                 // Add a tab with a query control in it
                 tabControl.AddTabWithControl(connection.Name + "." + database, queryControl, Properties.Resources.RunQuery);
@@ -1605,6 +1640,9 @@ namespace CymaticLabs.InfluxDB.Studio
             var node = connectionsTreeView.SelectedNode;
             var type = node != null ? GetNodeType(node) : InfluxDbNodeTypes.LoadingPlacholder;
             var canRunQeury = CanRunQuery();
+            var selectedConnection = node != null ? GetConnection(node) : null;
+            var supportsInfluxDb1Features = selectedConnection == null
+                || selectedConnection.ServerVersion == InfluxDbServerVersion.InfluxDb1;
 
             #region File Menu
 
@@ -1612,6 +1650,8 @@ namespace CymaticLabs.InfluxDB.Studio
             refreshToolStripMenuItem.Enabled = false;
             runQueryToolStripMenuItem.Enabled = false;
             newQueryToolStripMenuItem2.Enabled = false;
+            openQueryToolStripMenuItem.Enabled = false;
+            saveQueryToolStripMenuItem.Enabled = false;
             showQueriesToolStripMenuItem.Enabled = false;
 
             if (node != null)
@@ -1622,7 +1662,9 @@ namespace CymaticLabs.InfluxDB.Studio
             // Update run query based on whether or not a request control is currently in focus
             runQueryToolStripMenuItem.Enabled = canRunQeury;
             newQueryToolStripMenuItem2.Enabled = type == InfluxDbNodeTypes.Database || type == InfluxDbNodeTypes.Measurement;
-            showQueriesToolStripMenuItem.Enabled = type == InfluxDbNodeTypes.Connection;
+            openQueryToolStripMenuItem.Enabled = GetCurrentQueryControl() != null;
+            saveQueryToolStripMenuItem.Enabled = GetCurrentQueryControl() != null;
+            showQueriesToolStripMenuItem.Enabled = type == InfluxDbNodeTypes.Connection && supportsInfluxDb1Features;
 
             #endregion File Menu
 
@@ -1656,20 +1698,20 @@ namespace CymaticLabs.InfluxDB.Studio
                 disconnectButton.Enabled = true;
                 refreshButton.Enabled = type == InfluxDbNodeTypes.Connection || type == InfluxDbNodeTypes.Database;
                 newQueryButton.Enabled = type == InfluxDbNodeTypes.Database || type == InfluxDbNodeTypes.Measurement;
-                showQueriesButton.Enabled = type == InfluxDbNodeTypes.Connection;
-                showPoliciesButton.Enabled = type == InfluxDbNodeTypes.Connection;
-                showUsersButton.Enabled = type == InfluxDbNodeTypes.Connection;
-                showStatsButton.Enabled = type == InfluxDbNodeTypes.Connection;
-                showDiagnosticsButton.Enabled = type == InfluxDbNodeTypes.Connection;
+                showQueriesButton.Enabled = type == InfluxDbNodeTypes.Connection && supportsInfluxDb1Features;
+                showPoliciesButton.Enabled = type == InfluxDbNodeTypes.Connection && supportsInfluxDb1Features;
+                showUsersButton.Enabled = type == InfluxDbNodeTypes.Connection && supportsInfluxDb1Features;
+                showStatsButton.Enabled = type == InfluxDbNodeTypes.Connection && supportsInfluxDb1Features;
+                showDiagnosticsButton.Enabled = type == InfluxDbNodeTypes.Connection && supportsInfluxDb1Features;
                 createDatabaseButton.Enabled = type == InfluxDbNodeTypes.Connection;
-                continuousQueryButton.Enabled = type == InfluxDbNodeTypes.Database;
-                backFillButton.Enabled = type == InfluxDbNodeTypes.Database;
+                continuousQueryButton.Enabled = type == InfluxDbNodeTypes.Database && supportsInfluxDb1Features;
+                backFillButton.Enabled = type == InfluxDbNodeTypes.Database && supportsInfluxDb1Features;
                 dropDatabaseButton.Enabled = type == InfluxDbNodeTypes.Database && node.Text != "_internal";
                 tagKeysButton.Enabled = type == InfluxDbNodeTypes.Measurement;
                 tagValuesButton.Enabled = type == InfluxDbNodeTypes.Measurement;
                 fieldKeysButton.Enabled = type == InfluxDbNodeTypes.Measurement;
-                showSeriesButton.Enabled = type == InfluxDbNodeTypes.Measurement;
-                dropSeriesButton.Enabled = type == InfluxDbNodeTypes.Measurement;
+                showSeriesButton.Enabled = type == InfluxDbNodeTypes.Measurement && supportsInfluxDb1Features;
+                dropSeriesButton.Enabled = type == InfluxDbNodeTypes.Measurement && supportsInfluxDb1Features;
                 dropMeasurementButton.Enabled = type == InfluxDbNodeTypes.Measurement;
             }
 
@@ -1680,10 +1722,10 @@ namespace CymaticLabs.InfluxDB.Studio
 
             #region Context Menus
 
-            showQueriesContextMenuItem.Enabled = type == InfluxDbNodeTypes.Connection;
-            continousQueriesToolStripMenuItem.Enabled = type == InfluxDbNodeTypes.Database;
-            backFillToolStripMenuItem.Enabled = type == InfluxDbNodeTypes.Database;
-            dropDatabaseToolStripMenuItem.Enabled = type == InfluxDbNodeTypes.Database && node.Text != "_internal";
+            showQueriesContextMenuItem.Enabled = type == InfluxDbNodeTypes.Connection && supportsInfluxDb1Features;
+            continousQueriesToolStripMenuItem.Enabled = type == InfluxDbNodeTypes.Database && supportsInfluxDb1Features;
+            backFillToolStripMenuItem.Enabled = type == InfluxDbNodeTypes.Database && supportsInfluxDb1Features;
+            dropDatabaseToolStripMenuItem.Enabled = type == InfluxDbNodeTypes.Database && node != null && node.Text != "_internal";
 
             #endregion Context Menus
         }
@@ -1692,6 +1734,12 @@ namespace CymaticLabs.InfluxDB.Studio
         bool CanRunQuery()
         {
             return tabControl.SelectedTab != null && tabControl.SelectedTab.Controls.Count > 0 && tabControl.SelectedTab.Controls[0] is RequestControl;
+        }
+
+        QueryControl GetCurrentQueryControl()
+        {
+            if (tabControl.SelectedTab == null) return null;
+            return tabControl.SelectedTab.Controls.OfType<QueryControl>().FirstOrDefault();
         }
 
         #endregion User Interface
@@ -1937,12 +1985,8 @@ namespace CymaticLabs.InfluxDB.Studio
         {
             if (ex == null) throw new ArgumentNullException("ex");
 
-            // Workaround for KILL QUERY command
-            if (ex is InfluxData.Net.Common.Infrastructure.InfluxDataApiException)
-            {
-                var apiEx = (InfluxData.Net.Common.Infrastructure.InfluxDataApiException)ex;
-                if (apiEx.ResponseBody.Contains("query interrupted")) return;
-            }
+            // A successful KILL QUERY can interrupt the request that issued it.
+            if (ex.Message != null && ex.Message.Contains("query interrupted")) return;
 
             var message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             if (stackTrace) message += "\n\n{0}" + ex.StackTrace;

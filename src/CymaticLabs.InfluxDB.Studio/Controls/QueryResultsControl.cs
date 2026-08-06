@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -159,7 +160,8 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
                     var v = r[x];
 
                     // Attach the column values as subitems
-                    var li2 = new ListViewItem.ListViewSubItem(li, v != null ? v.ToString() : null);
+                    var columnName = x < result.Columns.Count ? result.Columns[x] : null;
+                    var li2 = new ListViewItem.ListViewSubItem(li, FormatOutputValue(columnName, v));
                     li2.Tag = r;
                     li.SubItems.Add(li2);
                 }
@@ -176,6 +178,32 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
             listView.EndUpdate();
 
             return resultsCount;
+        }
+
+        private static string FormatOutputValue(string columnName, object value)
+        {
+            if (value == null) return null;
+
+            var isTimeColumn = string.Equals(columnName, "time", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(columnName, "timestamp", StringComparison.OrdinalIgnoreCase);
+            if (!isTimeColumn && !(value is DateTime) && !(value is DateTimeOffset))
+                return Convert.ToString(value, CultureInfo.CurrentCulture);
+
+            DateTimeOffset timestamp;
+            if (value is DateTimeOffset offset)
+                timestamp = offset;
+            else if (value is DateTime dateTime)
+                timestamp = new DateTimeOffset(dateTime);
+            else if (!DateTimeOffset.TryParse(Convert.ToString(value, CultureInfo.InvariantCulture),
+                CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out timestamp))
+                return Convert.ToString(value, CultureInfo.CurrentCulture);
+
+            var timeFormat = AppForm.Settings.TimeFormat;
+            if (timeFormat.IndexOf('f') < 0)
+                timeFormat = timeFormat.Replace("ss", "ss.fff");
+
+            return timestamp.ToString(AppForm.Settings.DateFormat + " " + timeFormat,
+                CultureInfo.CurrentCulture);
         }
 
         // Exports series data to CSV

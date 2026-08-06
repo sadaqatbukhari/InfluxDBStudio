@@ -147,7 +147,7 @@
             this.influxDataNetLinkLabel.Size = new System.Drawing.Size(75, 13);
             this.influxDataNetLinkLabel.TabIndex = 4;
             this.influxDataNetLinkLabel.TabStop = true;
-            this.influxDataNetLinkLabel.Text = "InfluxData.Net";
+            this.influxDataNetLinkLabel.Text = "InfluxDB.Client";
             this.influxDataNetLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.influxDataNetLinkLabel_LinkClicked);
             // 
             // AboutDialog

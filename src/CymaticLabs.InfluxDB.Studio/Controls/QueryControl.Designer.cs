@@ -33,6 +33,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.resultsLabel = new System.Windows.Forms.Label();
             this.tabControl = new System.Windows.Forms.TabControl();
+            this.openQueryDialog = new System.Windows.Forms.OpenFileDialog();
+            this.saveQueryDialog = new System.Windows.Forms.SaveFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -62,21 +64,21 @@
             // queryEditor
             // 
             this.queryEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.queryEditor.Lexer = ScintillaNET.Lexer.Sql;
+            this.queryEditor.LexerName = "sql";
             this.queryEditor.Location = new System.Drawing.Point(0, 0);
             this.queryEditor.Name = "queryEditor";
             this.queryEditor.Size = new System.Drawing.Size(916, 128);
             this.queryEditor.TabIndex = 0;
-            // 
+            //
             // panel1
-            // 
+            //
             this.panel1.Controls.Add(this.resultsLabel);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 128);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(916, 34);
             this.panel1.TabIndex = 0;
-            // 
+            //
             // resultsLabel
             // 
             this.resultsLabel.AutoSize = true;
@@ -95,9 +97,21 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(916, 479);
             this.tabControl.TabIndex = 1;
+            //
+            // openQueryDialog
+            //
+            this.openQueryDialog.DefaultExt = "sql";
+            this.openQueryDialog.Filter = "Query files|*.sql;*.influxql;*.txt|SQL query files|*.sql|InfluxQL query files|*.influxql|Text files|*.txt|All files|*.*";
+            this.openQueryDialog.Title = "Open Query";
+            //
+            // saveQueryDialog
+            //
+            this.saveQueryDialog.DefaultExt = "sql";
+            this.saveQueryDialog.Filter = "SQL query files|*.sql|InfluxQL query files|*.influxql|Text files|*.txt|All files|*.*";
+            this.saveQueryDialog.Title = "Save Query";
             // 
             // QueryControl
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
@@ -120,5 +134,7 @@
         private ScintillaNET.Scintilla queryEditor;
         private System.Windows.Forms.Label resultsLabel;
         private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.OpenFileDialog openQueryDialog;
+        private System.Windows.Forms.SaveFileDialog saveQueryDialog;
     }
 }

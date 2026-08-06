@@ -40,10 +40,11 @@ namespace CymaticLabs.InfluxDB.Studio.Dialogs
             System.Diagnostics.Process.Start("https://github.com/CymaticLabs/InfluxDBStudio");
         }
 
-        // Launch InfluxData.Net link
+        // Launch the official InfluxDB .NET client link
         private void influxDataNetLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/pootzko/InfluxData.Net");
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(
+                "https://github.com/influxdata/influxdb-client-csharp") { UseShellExecute = true });
         }
 
         #endregion Event Handlers

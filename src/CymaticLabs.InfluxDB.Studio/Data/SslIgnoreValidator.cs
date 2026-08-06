@@ -52,8 +52,10 @@ namespace CymaticLabs.InfluxDB.Data
         // Overrides SSL/TLS certificate validation.
         static void OverrideValidation()
         {
+#pragma warning disable SYSLIB0014 // Required by the legacy InfluxDB 1.x client.
             ServicePointManager.ServerCertificateValidationCallback = OnValidateCertificate;
             ServicePointManager.Expect100Continue = true;
+#pragma warning restore SYSLIB0014
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -59,6 +60,34 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
         #region Methods
 
         /// <summary>
+        /// Prompts for a query file and loads it into the editor.
+        /// </summary>
+        public void OpenQuery()
+        {
+            if (openQueryDialog.ShowDialog(this) != DialogResult.OK) return;
+            EditorText = File.ReadAllText(openQueryDialog.FileName);
+        }
+
+        /// <summary>
+        /// Prompts for a file and saves the current query text.
+        /// </summary>
+        public void SaveQuery()
+        {
+            if (string.IsNullOrWhiteSpace(EditorText))
+            {
+                MessageBox.Show("Enter a query before saving.", "Save Query",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var connectionName = InfluxDbClient != null ? InfluxDbClient.Connection.Name : "InfluxDB";
+            saveQueryDialog.FileName = MakeSafeFileName(connectionName + "_" + Database + "_query.sql");
+            if (saveQueryDialog.ShowDialog(this) != DialogResult.OK) return;
+
+            File.WriteAllText(saveQueryDialog.FileName, EditorText);
+        }
+
+        /// <summary>
         /// Runs the current query against the configured connection and database.
         /// </summary>
         public override async Task ExecuteRequestAsync()
@@ -112,6 +141,13 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
 
             // Show stat results of query
             resultsLabel.Text = string.Format("results: {0}, response time: {1:0} ms", resultsCount, stopWatch.Elapsed.TotalMilliseconds);
+        }
+
+        private static string MakeSafeFileName(string fileName)
+        {
+            foreach (var invalidCharacter in Path.GetInvalidFileNameChars())
+                fileName = fileName.Replace(invalidCharacter, '_');
+            return fileName;
         }
 
         #endregion Methods

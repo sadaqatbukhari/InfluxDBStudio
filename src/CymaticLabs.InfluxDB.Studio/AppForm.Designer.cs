@@ -47,6 +47,9 @@
             this.manageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.queryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newQueryToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.openQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.queryToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.runQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showQueriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -219,6 +222,9 @@
             // 
             this.queryToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newQueryToolStripMenuItem2,
+            this.openQueryToolStripMenuItem,
+            this.saveQueryToolStripMenuItem,
+            this.queryToolStripSeparator,
             this.runQueryToolStripMenuItem,
             this.showQueriesToolStripMenuItem});
             this.queryToolStripMenuItem.Name = "queryToolStripMenuItem";
@@ -232,6 +238,27 @@
             this.newQueryToolStripMenuItem2.Size = new System.Drawing.Size(146, 22);
             this.newQueryToolStripMenuItem2.Text = "New Query";
             this.newQueryToolStripMenuItem2.Click += new System.EventHandler(this.newQueryToolStripMenuItem2_Click);
+            //
+            // openQueryToolStripMenuItem
+            //
+            this.openQueryToolStripMenuItem.Name = "openQueryToolStripMenuItem";
+            this.openQueryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openQueryToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.openQueryToolStripMenuItem.Text = "Open Query...";
+            this.openQueryToolStripMenuItem.Click += new System.EventHandler(this.openQueryToolStripMenuItem_Click);
+            //
+            // saveQueryToolStripMenuItem
+            //
+            this.saveQueryToolStripMenuItem.Name = "saveQueryToolStripMenuItem";
+            this.saveQueryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveQueryToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.saveQueryToolStripMenuItem.Text = "Save Query...";
+            this.saveQueryToolStripMenuItem.Click += new System.EventHandler(this.saveQueryToolStripMenuItem_Click);
+            //
+            // queryToolStripSeparator
+            //
+            this.queryToolStripSeparator.Name = "queryToolStripSeparator";
+            this.queryToolStripSeparator.Size = new System.Drawing.Size(180, 6);
             // 
             // runQueryToolStripMenuItem
             // 
@@ -676,6 +703,7 @@
             this.tabControl.TabImageWidth = 16;
             this.tabControl.TabIndex = 0;
             this.tabControl.TabLeadingOffset = 8;
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             this.tabControl.TabClosed += new System.EventHandler<System.Windows.Forms.TabPage>(this.tabControl_TabClosed);
             // 
             // connectionsContextMenu
@@ -969,6 +997,9 @@
         private System.Windows.Forms.ToolStripMenuItem dropSeriesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem queryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runQueryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openQueryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveQueryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator queryToolStripSeparator;
         private System.Windows.Forms.ToolStripMenuItem newQueryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newQueryToolStripMenuItem1;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
