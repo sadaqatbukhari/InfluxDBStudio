@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package
+    Name="InfluxDB Studio"
+    Manufacturer="Cymatic Labs"
+    Version="$(ProductVersion)"
+    UpgradeCode="D47470BB-5B89-4B74-8829-776FC2FD5ED5"
+    Scope="perMachine">
+
+    <SummaryInformation Description="InfluxDB Studio for InfluxDB 1.x and 3.x" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="InfluxDB Studio" />
+    </StandardDirectory>
+
+    <Files Include="$(PublishDir)\**" Directory="INSTALLFOLDER">
+      <Exclude Files="$(PublishDir)\InfluxDBStudio.exe" />
+      <Exclude Files="$(PublishDir)\**.pdb" />
+    </Files>
+
+    <Component Id="MainExecutableComponent" Directory="INSTALLFOLDER" Guid="*">
+      <File Id="MainExecutable" Source="$(PublishDir)\InfluxDBStudio.exe" KeyPath="yes">
+        <Shortcut
+          Id="StartMenuShortcut"
+          Directory="ProgramMenuFolder"
+          Name="InfluxDB Studio"
+          Description="Manage InfluxDB 1.x and 3.x servers"
+          WorkingDirectory="INSTALLFOLDER"
+          Advertise="yes" />
+        <Shortcut
+          Id="DesktopShortcut"
+          Directory="DesktopFolder"
+          Name="InfluxDB Studio"
+          Description="Manage InfluxDB 1.x and 3.x servers"
+          WorkingDirectory="INSTALLFOLDER"
+          Advertise="yes" />
+      </File>
+    </Component>
+
+    <Icon Id="InfluxDbStudioIcon" SourceFile="$(sys.SOURCEFILEDIR)..\..\src\CymaticLabs.InfluxDB.Studio\Resources\AppIcon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="InfluxDbStudioIcon" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/CymaticLabs/InfluxDBStudio" />
+
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(sys.SOURCEFILEDIR)License.rtf" />
+  </Package>
+</Wix>

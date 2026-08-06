@@ -62,6 +62,17 @@ dotnet build CymaticLabs.InfluxDB.sln
 
 Open the solution file `CymaticLabs.InfluxDB.sln` to get started.
 
+### Building the Windows installer
+
+Build the self-contained 64-bit Windows MSI from the repository root:
+
+```powershell
+.\installer\build-installer.ps1
+```
+
+The installer is created at `artifacts\installer\InfluxDBStudio-3.0.0-win-x64.msi`.
+It includes the .NET runtime, so the target computer does not need the .NET 10 runtime installed separately.
+
 ## Managing Connections
 
 Upon running **InfluxDBStudio.exe** you will be prompted with the **Manage Connections** dialog. This window will let you create, edit, and delete InfluxDB server connections.

@@ -1,0 +1,22 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+    <OutputName>InfluxDBStudio-3.0.0-win-x64</OutputName>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <ProductVersion>3.0.0</ProductVersion>
+    <PublishDir>$(MSBuildThisFileDirectory)..\..\artifacts\publish\win-x64</PublishDir>
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\artifacts\installer\</OutputPath>
+    <DefineConstants>ProductVersion=$(ProductVersion);PublishDir=$(PublishDir)</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+  </ItemGroup>
+
+  <Target Name="PublishApplication" BeforeTargets="BeforeBuild">
+    <MSBuild
+      Projects="$(MSBuildThisFileDirectory)..\..\src\CymaticLabs.InfluxDB.Studio\CymaticLabs.InfluxDB.Studio.csproj"
+      Targets="Restore;Publish"
+      Properties="Configuration=Release;RuntimeIdentifier=win-x64;SelfContained=true;PublishSingleFile=false;PublishTrimmed=false;DebugSymbols=false;DebugType=None;PublishDir=$(PublishDir)\" />
+  </Target>
+</Project>
