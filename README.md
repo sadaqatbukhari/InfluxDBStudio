@@ -6,6 +6,20 @@ and [Robomongo](https://robomongo.org/). InfluxDB Studio supports both InfluxDB 
 The 1.x integration uses InfluxData's official `InfluxDB.Client` package, while the 3.x
 integration uses the official `InfluxDB3.Client` package.
 
+## What's New in 3.0.2
+
+* **InfluxDB 1.x and 3.x connections** - Choose the server generation when creating or editing a connection.
+* **Official InfluxData clients** - Both integrations use the standard packages maintained by InfluxData.
+* **InfluxDB 3 SQL support** - Browse databases and tables, run SQL queries, write data, and perform health checks.
+* **Optional InfluxDB 1.x authentication** - Anonymous servers can be tested and used without entering a username or password.
+* **SQL Server-style query execution** - If text is selected, only the selected query text runs; otherwise, the entire editor runs.
+* **Open and save query files** - Use **Query → Open Query** (`Ctrl+O`) and **Query → Save Query** (`Ctrl+S`).
+* **Multi-line comments** - Toolbar buttons add or remove `--` comments across all selected lines.
+* **Large-result stability** - Query results use virtual scrolling and create visible rows on demand instead of rendering the entire result set at once.
+* **Millisecond timestamps** - The output window includes milliseconds in logged times.
+* **Modern Windows build** - The application targets .NET 10 and the installer includes the required runtime.
+* **Upgrade-safe settings** - Installing a newer version updates the application while retaining saved connections and preferences.
+
 The following are planned features that are not yet implemented in the current version:
 
 * _~~Retention Policy management~~ implemented, but not documented_
@@ -16,6 +30,7 @@ The following are planned features that are not yet implemented in the current v
 
 ## Table of Contents
 
+ - [What's New in 3.0.2](#whats-new-in-302)
  - [Installation](#installation)
  - [Managing Connections](#managing-connections)
    - [Connection Settings](#connection-settings)
@@ -26,6 +41,8 @@ The following are planned features that are not yet implemented in the current v
    - [Creating a Database](#creating-a-database)
    - [Dropping a Database](#dropping-a-database)
    - [Running a Database Query](#running-a-database-query)
+   - [Using the Query Editor](#using-the-query-editor)
+   - [Working with Large Query Results](#working-with-large-query-results)
    - [Exporting Database Query Results](#exporting-database-query-results)
    - [Creating Continuous Queries](#creating-continuous-queries)
    - [Running a Backfill Query](#running-a-backfill-query)
@@ -52,7 +69,7 @@ The following are planned features that are not yet implemented in the current v
    
 ## Installation
 
-Binary releases can be found [here](https://github.com/CymaticLabs/InfluxDBStudio/releases).
+Binary releases can be found on the [InfluxDB Studio releases page](https://github.com/sadaqatbukhari/InfluxDBStudio/releases).
 
 You can build locally on Windows with the .NET 10 SDK:
 
@@ -74,6 +91,17 @@ Each installer build automatically increments the patch version. It creates an i
 `InfluxDBStudio-<version>-Setup-win-x64.exe` and the underlying MSI in `artifacts\installer`.
 The installer asks whether to create a Desktop shortcut and always creates a Start Menu shortcut.
 It includes the .NET runtime, so the target computer does not need the .NET 10 runtime installed separately.
+
+When InfluxDB Studio is already installed, the installer performs an in-place upgrade. Saved
+connections and preferences are retained. Version 3.0.2 migrates older version-scoped settings
+on first use and then stores them at:
+
+```text
+%LOCALAPPDATA%\CymaticLabs\InfluxDB Studio\settings.json
+```
+
+This location is independent of the installed application version, so later upgrades reuse the
+same settings file. Uninstalling or upgrading the program does not remove this per-user file.
 
 ## Managing Connections
 
@@ -173,13 +201,39 @@ _Confirm that you would like to drop the selected database (**this is a permanen
 
 Select a database node in the tree view and either **double-click**, **right-click**, use **the toolbar button**, or select from the application menu **Query → New** to select the **New Query** command.
 
-Press **CTRL+R**, **the toolbar button**, or select from the application menu **Query → Run** to run the query. Results will be displayed in the table area below:
+Press **Ctrl+R**, **the toolbar button**, or select **Query → Run** to run the query. If query text
+is selected, only the selection is executed. If there is no selection, the complete editor content
+is executed. Results are displayed in the table area below:
 
 ![Run Query](docs/img/Databases_RunQuery_2.png?raw=true "Run Query")
 
 Using **aggregation (GROUP BY)** in queries will group the series results into their own tabs in the results area:
 
 ![Group Results](docs/img/Databases_RunQuery_3.png?raw=true "Group Results")
+
+### Using the Query Editor
+
+The query editor supports both InfluxQL for InfluxDB 1.x and SQL for InfluxDB 3.x.
+
+* **New query** - Select **Query → New**.
+* **Open query** - Select **Query → Open Query** or press `Ctrl+O` to load a query file into the active editor.
+* **Save query** - Select **Query → Save Query** or press `Ctrl+S` to save the active editor as a `.sql` file.
+* **Run selected text** - Highlight one or more statements and press `Ctrl+R` to run only that text.
+* **Run the full editor** - Clear the selection and press `Ctrl+R`.
+* **Comment lines** - Select one or more lines and click the `--` toolbar button.
+* **Uncomment lines** - Select commented lines and click the `×--` toolbar button.
+
+The save and open commands are located in the **Query** menu rather than below the query editor,
+leaving more vertical space for query text and results.
+
+### Working with Large Query Results
+
+Large query results are retained in memory but displayed through a virtual list. InfluxDB Studio
+creates only the rows requested for the visible area as you scroll, avoiding the large UI allocation
+and rendering cost that previously caused the application to become unresponsive or terminate.
+
+CSV and JSON export continue to operate on the complete in-memory result, including rows that have
+not been displayed. **Export Selected** exports only the rows selected in the virtual result list.
 
 ### Exporting Database Query Results
 
@@ -252,6 +306,9 @@ The following commands are available from the Measurement **context menu** and *
 Select a measurement node in the tree view and either **double-click**, **right-click**, use **the toolbar button**, or select from the application menu **Query → New** to select the **New Query** command.
 
 Press **CTRL+R**, **the toolbar button**, or select from the application menu **Query → Run** to run the query. Results will be displayed in the table area below:
+
+As with database queries, selecting text runs only the selected portion; with no selection, the
+entire query editor is executed.
 
 ![Run Query](docs/img/Measurements_RunQuery_1.png?raw=true "Run Query")
 
@@ -399,6 +456,11 @@ _Select the desired privilege from the drop down and save. To revoke all privile
 
 Application settings can be adjusted in the application **Settings** menu. Settings and connection information can also be imported and exported.
 
+Settings are saved automatically in the version-independent per-user file shown in the
+[Installation](#installation) section. On the first launch of version 3.0.2, InfluxDB Studio searches
+supported legacy `user.config` locations and imports the newest configuration containing saved
+connections. Future upgrades load the stable settings file directly.
+
 ### Settings Overview
   
   * **Settings → Time Format**
@@ -419,4 +481,4 @@ To import application settings, including all configured InfluxDB server connect
 
 ## License
 
-Code and documentation are available according to the *MIT* License (see [LICENSE](https://github.com/CymaticLabs/InfluxDBStudio/blob/master/LICENSE)).
+Code and documentation are available according to the *MIT* License (see [LICENSE](https://github.com/sadaqatbukhari/InfluxDBStudio/blob/master/LICENSE)).
