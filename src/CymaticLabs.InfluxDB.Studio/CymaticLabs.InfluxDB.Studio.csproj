@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Version.props" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
@@ -6,10 +7,12 @@
     <RootNamespace>CymaticLabs.InfluxDB.Studio</RootNamespace>
     <AssemblyName>InfluxDBStudio</AssemblyName>
     <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Version>3.0.0</Version>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
-    <FileVersion>3.0.0.0</FileVersion>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Title>InfluxDB Studio</Title>
+    <Description>Visual IDE for managing InfluxDB</Description>
+    <Company>Cymatic Labs</Company>
+    <Product>InfluxDB Studio</Product>
+    <Copyright>Copyright © Michael Everett/Cymatic Labs 2017</Copyright>
     <Nullable>disable</Nullable>
     <LangVersion>latest</LangVersion>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>

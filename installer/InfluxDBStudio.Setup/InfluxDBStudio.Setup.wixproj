@@ -1,12 +1,14 @@
 <Project Sdk="WixToolset.Sdk/5.0.2">
+  <Import Project="..\..\Version.props" />
   <PropertyGroup>
     <OutputType>Package</OutputType>
-    <OutputName>InfluxDBStudio-3.0.0-win-x64</OutputName>
+    <OutputName>InfluxDBStudio-$(Version)-win-x64</OutputName>
     <InstallerPlatform>x64</InstallerPlatform>
-    <ProductVersion>3.0.0</ProductVersion>
+    <ProductVersion>$(Version)</ProductVersion>
     <PublishDir>$(MSBuildThisFileDirectory)..\..\artifacts\publish\win-x64</PublishDir>
     <OutputPath>$(MSBuildThisFileDirectory)..\..\artifacts\installer\</OutputPath>
     <DefineConstants>ProductVersion=$(ProductVersion);PublishDir=$(PublishDir)</DefineConstants>
+    <SuppressIces>ICE69</SuppressIces>
   </PropertyGroup>
 
   <ItemGroup>

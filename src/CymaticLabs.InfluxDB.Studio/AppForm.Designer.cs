@@ -73,6 +73,8 @@
             this.refreshButton = new System.Windows.Forms.ToolStripButton();
             this.newQueryButton = new System.Windows.Forms.ToolStripButton();
             this.runQueryButton = new System.Windows.Forms.ToolStripButton();
+            this.commentQueryButton = new System.Windows.Forms.ToolStripButton();
+            this.uncommentQueryButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.createDatabaseButton = new System.Windows.Forms.ToolStripButton();
             this.continuousQueryButton = new System.Windows.Forms.ToolStripButton();
@@ -373,6 +375,8 @@
             this.refreshButton,
             this.newQueryButton,
             this.runQueryButton,
+            this.commentQueryButton,
+            this.uncommentQueryButton,
             this.toolStripSeparator2,
             this.createDatabaseButton,
             this.continuousQueryButton,
@@ -502,6 +506,26 @@
             this.runQueryButton.Text = "runQueryButton";
             this.runQueryButton.ToolTipText = "Run Query";
             this.runQueryButton.Click += new System.EventHandler(this.runQueryButton_Click);
+            //
+            // commentQueryButton
+            //
+            this.commentQueryButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.commentQueryButton.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold);
+            this.commentQueryButton.Name = "commentQueryButton";
+            this.commentQueryButton.Size = new System.Drawing.Size(26, 22);
+            this.commentQueryButton.Text = "--";
+            this.commentQueryButton.ToolTipText = "Comment Selected Lines";
+            this.commentQueryButton.Click += new System.EventHandler(this.commentQueryButton_Click);
+            //
+            // uncommentQueryButton
+            //
+            this.uncommentQueryButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.uncommentQueryButton.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold);
+            this.uncommentQueryButton.Name = "uncommentQueryButton";
+            this.uncommentQueryButton.Size = new System.Drawing.Size(33, 22);
+            this.uncommentQueryButton.Text = "×--";
+            this.uncommentQueryButton.ToolTipText = "Uncomment Selected Lines";
+            this.uncommentQueryButton.Click += new System.EventHandler(this.uncommentQueryButton_Click);
             // 
             // toolStripSeparator2
             // 
@@ -1014,6 +1038,8 @@
         private System.Windows.Forms.ToolStripButton disconnectButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton runQueryButton;
+        private System.Windows.Forms.ToolStripButton commentQueryButton;
+        private System.Windows.Forms.ToolStripButton uncommentQueryButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton newQueryButton;
         private System.Windows.Forms.ToolStripButton dropDatabaseButton;

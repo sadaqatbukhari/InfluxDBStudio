@@ -1,201 +1,159 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 using CymaticLabs.InfluxDB.Data;
+using Newtonsoft.Json;
 
 namespace CymaticLabs.InfluxDB.Studio
 {
     /// <summary>
-    /// Intermediate object used to import or export application settings.
+    /// Application settings stored in a version-independent per-user location.
     /// </summary>
     public class AppSettings
     {
-        #region Fields
-
-        /// <summary>
-        /// Time format string for 12 hour time.
-        /// </summary>
         public const string TimeFormat12Hour = "hh:mm:ss tt";
-
-        /// <summary>
-        /// Time format string for 24 hour time.
-        /// </summary>
         public const string TimeFormat24Hour = "HH:mm:ss";
-
-        /// <summary>
-        /// Date format string for day-first dates.
-        /// </summary>
         public const string DateFormatDay = "d/MM/yyyy";
-
-        /// <summary>
-        /// Date format string for month-first dates.
-        /// </summary>
         public const string DateFormatMonth = "M/dd/yyyy";
 
-        // Whether or not to allow untrusted SSL certificates
-        bool allowUntrustedSsl = false;
+        private const string SettingsDirectoryName = "InfluxDB Studio";
+        private const string SettingsFileName = "settings.json";
 
-        // Internal app time format setting
-        string timeFormat;
+        private readonly string settingsFilePath;
+        private readonly IEnumerable<string> legacySearchRoots;
+        private bool allowUntrustedSsl;
+        private string timeFormat;
+        private string dateFormat;
 
-        // Internal app date format setting
-        string dateFormat;
-
-        #endregion Fields
-
-        #region Properties
-
-        /// <summary>
-        /// Gets or sets the application version the settings are for/from.
-        /// </summary>
         public string Version { get; private set; }
 
         /// <summary>
-        /// Gets the current time format setting.
+        /// Gets the fixed settings file path. This path does not contain the application version,
+        /// so MSI and bundle upgrades cannot change or remove it.
         /// </summary>
+        public string SettingsFilePath => settingsFilePath;
+
         public string TimeFormat
         {
             get { return timeFormat; }
-
             set
             {
                 if (timeFormat != value)
                 {
                     timeFormat = value;
-                    Properties.Settings.Default.TimeFormat = timeFormat;
-                    Properties.Settings.Default.Save(); // update settings file
+                    SaveAll();
                 }
             }
         }
 
-        /// <summary>
-        /// Gets the current date format setting.
-        /// </summary>
         public string DateFormat
         {
             get { return dateFormat; }
-
             set
             {
                 if (dateFormat != value)
                 {
                     dateFormat = value;
-                    Properties.Settings.Default.DateFormat = dateFormat;
-                    Properties.Settings.Default.Save(); // update settings file
+                    SaveAll();
                 }
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether or not the application should allow untrusted SSL certificates
-        /// when communicating to InfluxDB servers.
-        /// </summary>
         public bool AllowUntrustedSsl
         {
             get { return allowUntrustedSsl; }
-
             set
             {
                 if (allowUntrustedSsl != value)
                 {
                     allowUntrustedSsl = value;
-                    Properties.Settings.Default.AllowUntrustedSsl = allowUntrustedSsl;
-                    Properties.Settings.Default.Save(); // update settings file
+                    SaveAll();
                 }
             }
         }
 
-        /// <summary>
-        /// Gets or sets the available InfluxDB connections.
-        /// </summary>
         public List<InfluxDbConnection> Connections { get; set; }
 
-        #endregion Properties
-
-        #region Constructors
-
         public AppSettings()
+            : this(GetDefaultSettingsFilePath(), GetDefaultLegacySearchRoots())
         {
-            // Initialize default settings
+        }
+
+        /// <summary>
+        /// Allows the storage path and legacy locations to be supplied for verification without
+        /// reading or changing the real user's profile.
+        /// </summary>
+        internal AppSettings(string filePath, IEnumerable<string> searchRoots)
+        {
+            settingsFilePath = filePath;
+            legacySearchRoots = searchRoots ?? Enumerable.Empty<string>();
             timeFormat = TimeFormat12Hour;
             dateFormat = DateFormatMonth;
-            allowUntrustedSsl = false;
             Connections = new List<InfluxDbConnection>();
-
-            // Set the version string
-            Version = GetType().Assembly.GetName().Version.ToString();
-
-            // Upgrade settings as needed
-            Properties.Settings.Default.Upgrade();
+            Version = GetType().Assembly.GetName().Version?.ToString() ?? "0.0.0.0";
         }
 
-        #endregion Constructors
-
-        #region Methods
-
-        /// <summary>
-        /// Loads settings from disk.
-        /// </summary>
         public void LoadAll()
         {
-            timeFormat = Properties.Settings.Default.TimeFormat;
-            dateFormat = Properties.Settings.Default.DateFormat;
-            allowUntrustedSsl = Properties.Settings.Default.AllowUntrustedSsl;
-            LoadConnections();
-        }
+            PersistedAppSettings settings = null;
 
-        /// <summary>
-        /// Saves all current settings ti disk.
-        /// </summary>
-        public void SaveAll()
-        {
-            Properties.Settings.Default.TimeFormat = TimeFormat;
-            Properties.Settings.Default.DateFormat = DateFormat;
-            Properties.Settings.Default.AllowUntrustedSsl = AllowUntrustedSsl;
-            SaveConnections();
-        }
-
-        /// <summary>
-        /// Loads all connections data from disk.
-        /// </summary>
-        public void LoadConnections()
-        {
-            var json = Properties.Settings.Default.ConnectionsJson;
-            var loadedConnections = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-            Connections = new List<InfluxDbConnection>();
-
-            if (loadedConnections is JArray)
+            if (File.Exists(settingsFilePath))
             {
-                var array = (JArray)loadedConnections;
+                settings = ReadSettingsFile(settingsFilePath);
+            }
+            else
+            {
+                settings = ReadLegacySettings();
+            }
 
-                foreach (var item in array)
-                {
-                    try
-                    {
-                        // Convert to connection object
-                        var connection = item.ToObject<InfluxDbConnection>();
-                        if (connection != null) Connections.Add(connection);
-                    }
-                    catch (Exception ex)
-                    {
-                        AppForm.DisplayException(ex);
-                    }
-                }
+            if (settings == null)
+            {
+                return;
+            }
+
+            timeFormat = string.IsNullOrWhiteSpace(settings.TimeFormat)
+                ? TimeFormat12Hour
+                : settings.TimeFormat;
+            dateFormat = string.IsNullOrWhiteSpace(settings.DateFormat)
+                ? DateFormatMonth
+                : settings.DateFormat;
+            allowUntrustedSsl = settings.AllowUntrustedSsl;
+            Connections = settings.Connections ?? new List<InfluxDbConnection>();
+
+            // A legacy import is immediately written to the stable path. Future versions then
+            // read the same file and never depend on .NET's version-scoped user.config folder.
+            if (!File.Exists(settingsFilePath))
+            {
+                SaveAll();
             }
         }
 
-        /// <summary>
-        /// Saves current connection data to disk.
-        /// </summary>
-        public void SaveConnections()
+        public void SaveAll()
         {
             try
             {
-                // Save to disk
-                var json = JsonConvert.SerializeObject(Connections);
-                Properties.Settings.Default.ConnectionsJson = json;
-                Properties.Settings.Default.Save();
+                var directory = Path.GetDirectoryName(settingsFilePath);
+                if (string.IsNullOrWhiteSpace(directory))
+                {
+                    throw new InvalidOperationException("The settings file must have a directory.");
+                }
+
+                Directory.CreateDirectory(directory);
+                var settings = new PersistedAppSettings
+                {
+                    Version = Version,
+                    TimeFormat = TimeFormat,
+                    DateFormat = DateFormat,
+                    AllowUntrustedSsl = AllowUntrustedSsl,
+                    Connections = Connections ?? new List<InfluxDbConnection>()
+                };
+
+                var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+                var temporaryPath = settingsFilePath + ".tmp";
+                File.WriteAllText(temporaryPath, json);
+                File.Move(temporaryPath, settingsFilePath, true);
             }
             catch (Exception ex)
             {
@@ -203,6 +161,193 @@ namespace CymaticLabs.InfluxDB.Studio
             }
         }
 
-        #endregion Methods
+        public void LoadConnections()
+        {
+            LoadAll();
+        }
+
+        public void SaveConnections()
+        {
+            SaveAll();
+        }
+
+        private PersistedAppSettings ReadSettingsFile(string path)
+        {
+            try
+            {
+                var json = File.ReadAllText(path);
+                return JsonConvert.DeserializeObject<PersistedAppSettings>(json);
+            }
+            catch (Exception ex)
+            {
+                AppForm.DisplayException(ex);
+                return null;
+            }
+        }
+
+        private PersistedAppSettings ReadLegacySettings()
+        {
+            var candidates = new List<LegacySettingsCandidate>();
+
+            // Include settings already found by .NET for the current executable identity.
+            var current = CreateLegacySettings(
+                Properties.Settings.Default.ConnectionsJson,
+                Properties.Settings.Default.TimeFormat,
+                Properties.Settings.Default.DateFormat,
+                Properties.Settings.Default.AllowUntrustedSsl);
+            if (current != null)
+            {
+                candidates.Add(new LegacySettingsCandidate(current, DateTime.MaxValue));
+            }
+
+            foreach (var root in legacySearchRoots.Where(Directory.Exists).Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    foreach (var path in Directory.EnumerateFiles(root, "user.config", SearchOption.AllDirectories))
+                    {
+                        var settings = ReadLegacyUserConfig(path);
+                        if (settings != null)
+                        {
+                            candidates.Add(new LegacySettingsCandidate(settings, File.GetLastWriteTimeUtc(path)));
+                        }
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // A protected sibling directory should not prevent migration from other roots.
+                }
+                catch (IOException)
+                {
+                    // A stale or locked legacy directory can safely be skipped.
+                }
+            }
+
+            return candidates
+                .OrderByDescending(candidate => candidate.Settings.Connections?.Count > 0)
+                .ThenByDescending(candidate => candidate.LastWriteTimeUtc)
+                .Select(candidate => candidate.Settings)
+                .FirstOrDefault();
+        }
+
+        private static PersistedAppSettings ReadLegacyUserConfig(string path)
+        {
+            try
+            {
+                var document = XDocument.Load(path);
+                var values = document
+                    .Descendants()
+                    .Where(element => element.Name.LocalName == "setting")
+                    .Where(element => element.Attribute("name") != null)
+                    .GroupBy(element => (string)element.Attribute("name"), StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(
+                        group => group.Key,
+                        group => group.Last().Elements().FirstOrDefault(element => element.Name.LocalName == "value")?.Value,
+                        StringComparer.OrdinalIgnoreCase);
+
+                values.TryGetValue("ConnectionsJson", out var connectionsJson);
+                values.TryGetValue("TimeFormat", out var legacyTimeFormat);
+                values.TryGetValue("DateFormat", out var legacyDateFormat);
+                values.TryGetValue("AllowUntrustedSsl", out var legacyAllowUntrustedSsl);
+                bool.TryParse(legacyAllowUntrustedSsl, out var parsedAllowUntrustedSsl);
+
+                return CreateLegacySettings(
+                    connectionsJson,
+                    legacyTimeFormat,
+                    legacyDateFormat,
+                    parsedAllowUntrustedSsl);
+            }
+            catch
+            {
+                // Invalid or unrelated user.config files are ignored during best-effort migration.
+                return null;
+            }
+        }
+
+        private static PersistedAppSettings CreateLegacySettings(
+            string connectionsJson,
+            string legacyTimeFormat,
+            string legacyDateFormat,
+            bool legacyAllowUntrustedSsl)
+        {
+            List<InfluxDbConnection> connections = null;
+            if (!string.IsNullOrWhiteSpace(connectionsJson))
+            {
+                try
+                {
+                    connections = JsonConvert.DeserializeObject<List<InfluxDbConnection>>(connectionsJson);
+                }
+                catch (JsonException)
+                {
+                    return null;
+                }
+            }
+
+            var hasSettings = connections?.Count > 0
+                || (!string.IsNullOrWhiteSpace(legacyTimeFormat) && legacyTimeFormat != TimeFormat12Hour)
+                || (!string.IsNullOrWhiteSpace(legacyDateFormat) && legacyDateFormat != DateFormatMonth)
+                || legacyAllowUntrustedSsl;
+
+            if (!hasSettings)
+            {
+                return null;
+            }
+
+            return new PersistedAppSettings
+            {
+                TimeFormat = legacyTimeFormat,
+                DateFormat = legacyDateFormat,
+                AllowUntrustedSsl = legacyAllowUntrustedSsl,
+                Connections = connections ?? new List<InfluxDbConnection>()
+            };
+        }
+
+        private static string GetDefaultSettingsFilePath()
+        {
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "CymaticLabs",
+                SettingsDirectoryName,
+                SettingsFileName);
+        }
+
+        private static IEnumerable<string> GetDefaultLegacySearchRoots()
+        {
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var directoryNames = new[]
+            {
+                "CymaticLabs",
+                "Cymatic_Labs",
+                "InfluxDBStudio",
+                "InfluxDB_Studio",
+                "InfluxStudio_Core"
+            };
+
+            return new[] { localAppData, appData }
+                .Where(path => !string.IsNullOrWhiteSpace(path))
+                .SelectMany(path => directoryNames.Select(name => Path.Combine(path, name)));
+        }
+
+        private sealed class PersistedAppSettings
+        {
+            public string Version { get; set; }
+            public string TimeFormat { get; set; }
+            public string DateFormat { get; set; }
+            public bool AllowUntrustedSsl { get; set; }
+            public List<InfluxDbConnection> Connections { get; set; }
+        }
+
+        private sealed class LegacySettingsCandidate
+        {
+            public LegacySettingsCandidate(PersistedAppSettings settings, DateTime lastWriteTimeUtc)
+            {
+                Settings = settings;
+                LastWriteTimeUtc = lastWriteTimeUtc;
+            }
+
+            public PersistedAppSettings Settings { get; }
+            public DateTime LastWriteTimeUtc { get; }
+        }
     }
 }

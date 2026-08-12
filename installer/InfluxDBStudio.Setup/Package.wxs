@@ -29,22 +29,40 @@
           Name="InfluxDB Studio"
           Description="Manage InfluxDB 1.x and 3.x servers"
           WorkingDirectory="INSTALLFOLDER"
-          Advertise="yes" />
-        <Shortcut
-          Id="DesktopShortcut"
-          Directory="DesktopFolder"
-          Name="InfluxDB Studio"
-          Description="Manage InfluxDB 1.x and 3.x servers"
-          WorkingDirectory="INSTALLFOLDER"
+          Icon="AppIcon.exe"
+          IconIndex="0"
           Advertise="yes" />
       </File>
     </Component>
 
-    <Icon Id="InfluxDbStudioIcon" SourceFile="$(sys.SOURCEFILEDIR)..\..\src\CymaticLabs.InfluxDB.Studio\Resources\AppIcon.ico" />
-    <Property Id="ARPPRODUCTICON" Value="InfluxDbStudioIcon" />
-    <Property Id="ARPHELPLINK" Value="https://github.com/CymaticLabs/InfluxDBStudio" />
+    <Component Id="DesktopShortcutComponent"
+               Directory="DesktopFolder"
+               Guid="*"
+               Condition="INSTALLDESKTOPSHORTCUT"
+               Transitive="yes">
+      <Shortcut
+        Id="DesktopShortcut"
+        Name="InfluxDB Studio"
+        Description="Manage InfluxDB 1.x and 3.x servers"
+        Target="[#MainExecutable]"
+        WorkingDirectory="INSTALLFOLDER"
+        Icon="AppIcon.exe"
+        IconIndex="0" />
+      <RegistryValue
+        Root="HKCU"
+        Key="Software\Cymatic Labs\InfluxDB Studio"
+        Name="DesktopShortcut"
+        Type="integer"
+        Value="1"
+        KeyPath="yes" />
+    </Component>
 
-    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
-    <WixVariable Id="WixUILicenseRtf" Value="$(sys.SOURCEFILEDIR)License.rtf" />
+    <Icon Id="AppIcon.exe" SourceFile="$(sys.SOURCEFILEDIR)..\..\src\CymaticLabs.InfluxDB.Studio\Resources\AppIcon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.exe" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/CymaticLabs/InfluxDBStudio" />
+    <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" Secure="yes" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+
+    <UIRef Id="InfluxStudioInstallUI" />
   </Package>
 </Wix>

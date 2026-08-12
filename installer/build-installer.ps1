@@ -3,12 +3,28 @@ param()
 
 $ErrorActionPreference = 'Stop'
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
-$installerProject = Join-Path $PSScriptRoot 'InfluxDBStudio.Setup\InfluxDBStudio.Setup.wixproj'
-$installerPath = Join-Path $repositoryRoot 'artifacts\installer\InfluxDBStudio-3.0.0-win-x64.msi'
+$versionFile = Join-Path $repositoryRoot 'Version.props'
+$bundleProject = Join-Path $PSScriptRoot 'InfluxDBStudio.Bundle\InfluxDBStudio.Bundle.wixproj'
 
-dotnet build $installerProject --configuration Release
+[xml]$versionDocument = Get-Content -LiteralPath $versionFile
+$currentVersion = [Version]$versionDocument.Project.PropertyGroup.Version
+$nextVersion = '{0}.{1}.{2}' -f $currentVersion.Major, $currentVersion.Minor,
+    ($currentVersion.Build + 1)
+
+$versionDocument.Project.PropertyGroup.Version = $nextVersion
+$versionDocument.Project.PropertyGroup.AssemblyVersion = "$nextVersion.0"
+$versionDocument.Project.PropertyGroup.FileVersion = "$nextVersion.0"
+$versionDocument.Save($versionFile)
+
+Write-Host "Building InfluxDB Studio $nextVersion..."
+dotnet build $bundleProject --configuration Release
 if ($LASTEXITCODE -ne 0) {
     throw "Installer build failed with exit code $LASTEXITCODE."
 }
 
-Write-Host "Installer created: $installerPath"
+$installerDirectory = Join-Path $repositoryRoot 'artifacts\installer'
+$setupPath = Join-Path $installerDirectory "InfluxDBStudio-$nextVersion-Setup-win-x64.exe"
+$msiPath = Join-Path $installerDirectory "InfluxDBStudio-$nextVersion-win-x64.msi"
+
+Write-Host "Setup created: $setupPath"
+Write-Host "MSI created:   $msiPath"

@@ -70,7 +70,9 @@ Build the self-contained 64-bit Windows MSI from the repository root:
 .\installer\build-installer.ps1
 ```
 
-The installer is created at `artifacts\installer\InfluxDBStudio-3.0.0-win-x64.msi`.
+Each installer build automatically increments the patch version. It creates an icon-branded
+`InfluxDBStudio-<version>-Setup-win-x64.exe` and the underlying MSI in `artifacts\installer`.
+The installer asks whether to create a Desktop shortcut and always creates a Start Menu shortcut.
 It includes the .NET runtime, so the target computer does not need the .NET 10 runtime installed separately.
 
 ## Managing Connections

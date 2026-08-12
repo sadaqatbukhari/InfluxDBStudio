@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+  <Bundle
+    Name="InfluxDB Studio"
+    Manufacturer="Cymatic Labs"
+    Version="$(ProductVersion)"
+    UpgradeCode="2C78EA60-1D73-496E-B290-8671D140C794"
+    IconSourceFile="$(IconPath)"
+    HelpUrl="https://github.com/CymaticLabs/InfluxDBStudio">
+
+    <BootstrapperApplication>
+      <bal:WixInternalUIBootstrapperApplication Theme="standard" LogoFile="$(LogoPath)" />
+    </BootstrapperApplication>
+
+    <Chain>
+      <MsiPackage
+        Id="InfluxDBStudioMsi"
+        SourceFile="$(MsiPath)"
+        Compressed="yes"
+        Vital="yes"
+        Visible="no"
+        bal:PrimaryPackageType="default" />
+    </Chain>
+  </Bundle>
+</Wix>

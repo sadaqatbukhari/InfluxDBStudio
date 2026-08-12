@@ -88,6 +88,54 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
         }
 
         /// <summary>
+        /// Adds an InfluxQL/SQL line comment to each selected line, or to the
+        /// current line when there is no selection.
+        /// </summary>
+        public void CommentSelectedLines()
+        {
+            var lineRange = GetSelectedLineRange();
+            for (var lineIndex = lineRange.Start; lineIndex <= lineRange.End; lineIndex++)
+            {
+                var line = queryEditor.Lines[lineIndex];
+                var indentationLength = GetIndentationLength(line.Text);
+                queryEditor.InsertText(line.Position + indentationLength, "-- ");
+            }
+
+            SelectLineRange(lineRange.Start, lineRange.End);
+            queryEditor.Focus();
+        }
+
+        /// <summary>
+        /// Removes an InfluxQL/SQL line comment from each selected line, or from
+        /// the current line when there is no selection.
+        /// </summary>
+        public void UncommentSelectedLines()
+        {
+            var lineRange = GetSelectedLineRange();
+            for (var lineIndex = lineRange.Start; lineIndex <= lineRange.End; lineIndex++)
+            {
+                var line = queryEditor.Lines[lineIndex];
+                var lineText = line.Text;
+                var indentationLength = GetIndentationLength(lineText);
+                if (lineText.Length < indentationLength + 2
+                    || lineText[indentationLength] != '-'
+                    || lineText[indentationLength + 1] != '-')
+                    continue;
+
+                var removalLength = 2;
+                if (lineText.Length > indentationLength + 2
+                    && (lineText[indentationLength + 2] == ' '
+                        || lineText[indentationLength + 2] == '\t'))
+                    removalLength++;
+
+                queryEditor.DeleteRange(line.Position + indentationLength, removalLength);
+            }
+
+            SelectLineRange(lineRange.Start, lineRange.End);
+            queryEditor.Focus();
+        }
+
+        /// <summary>
         /// Runs the current query against the configured connection and database.
         /// </summary>
         public override async Task ExecuteRequestAsync()
@@ -97,9 +145,18 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
             // Reset the results count
             resultsCount = 0;
 
-            // Get the database and the query
-            var query = EditorText.Trim();
-            bool isAggregate = query.ToLower().Contains("group by");
+            // Match SQL Server Management Studio: run the selected text when a
+            // selection exists; otherwise run the complete editor contents.
+            var query = GetQueryTextToExecute();
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                MessageBox.Show("Select or enter a query to run.", "Run Query",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            bool isAggregate = query.IndexOf("group by",
+                StringComparison.OrdinalIgnoreCase) >= 0;
 
             // Clear the current results
             tabControl.Controls.Clear();
@@ -141,6 +198,44 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
 
             // Show stat results of query
             resultsLabel.Text = string.Format("results: {0}, response time: {1:0} ms", resultsCount, stopWatch.Elapsed.TotalMilliseconds);
+        }
+
+        private string GetQueryTextToExecute()
+        {
+            var hasSelection = queryEditor.SelectionStart != queryEditor.SelectionEnd;
+            return (hasSelection ? queryEditor.SelectedText : EditorText).Trim();
+        }
+
+        private (int Start, int End) GetSelectedLineRange()
+        {
+            var selectionStart = Math.Min(queryEditor.SelectionStart, queryEditor.SelectionEnd);
+            var selectionEnd = Math.Max(queryEditor.SelectionStart, queryEditor.SelectionEnd);
+            var startLine = queryEditor.LineFromPosition(selectionStart);
+            var endLine = queryEditor.LineFromPosition(selectionEnd);
+
+            // A selection ending at the beginning of the next line does not include
+            // that line, which matches Visual Studio and SQL Server behavior.
+            if (selectionEnd > selectionStart
+                && selectionEnd == queryEditor.Lines[endLine].Position)
+                endLine--;
+
+            return (startLine, Math.Max(startLine, endLine));
+        }
+
+        private void SelectLineRange(int startLine, int endLine)
+        {
+            var selectionStart = queryEditor.Lines[startLine].Position;
+            var selectionEnd = queryEditor.Lines[endLine].EndPosition;
+            queryEditor.SetSelection(selectionEnd, selectionStart);
+        }
+
+        private static int GetIndentationLength(string lineText)
+        {
+            var indentationLength = 0;
+            while (indentationLength < lineText.Length
+                && (lineText[indentationLength] == ' ' || lineText[indentationLength] == '\t'))
+                indentationLength++;
+            return indentationLength;
         }
 
         private static string MakeSafeFileName(string fileName)

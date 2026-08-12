@@ -362,6 +362,16 @@ namespace CymaticLabs.InfluxDB.Studio
             if (CanRunQuery()) await ExecuteCurrentRequest();
         }
 
+        private void commentQueryButton_Click(object sender, EventArgs e)
+        {
+            GetCurrentQueryControl()?.CommentSelectedLines();
+        }
+
+        private void uncommentQueryButton_Click(object sender, EventArgs e)
+        {
+            GetCurrentQueryControl()?.UncommentSelectedLines();
+        }
+
         // New Query
         private void newQueryButton_Click(object sender, EventArgs e)
         {
@@ -1680,6 +1690,8 @@ namespace CymaticLabs.InfluxDB.Studio
             refreshButton.Enabled = false;
             runQueryButton.Enabled = false;
             newQueryButton.Enabled = false;
+            commentQueryButton.Enabled = false;
+            uncommentQueryButton.Enabled = false;
             createDatabaseButton.Enabled = false;
             continuousQueryButton.Enabled = false;
             backFillButton.Enabled = false;
@@ -1717,6 +1729,9 @@ namespace CymaticLabs.InfluxDB.Studio
 
             // Update run query based on whether or not a request control is currently in focus
             runQueryButton.Enabled = canRunQeury;
+            var currentQueryControl = GetCurrentQueryControl();
+            commentQueryButton.Enabled = currentQueryControl != null;
+            uncommentQueryButton.Enabled = currentQueryControl != null;
 
             #endregion Tool Strip
 
