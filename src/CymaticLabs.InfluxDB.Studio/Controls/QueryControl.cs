@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ScintillaNET;
 using CymaticLabs.InfluxDB.Data;
+using Syncfusion.Windows.Forms.Edit.Enums;
+using Syncfusion.Windows.Forms.Edit.Interfaces;
 
 namespace CymaticLabs.InfluxDB.Studio.Controls
 {
@@ -21,6 +22,8 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
 
         // Used to give resulting rows an ID number
         int resultsCount = 0;
+
+        readonly InfluxQueryIntellisense intellisense = new InfluxQueryIntellisense();
 
         #endregion Fields
 
@@ -48,11 +51,15 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
             // Clear query results text
             resultsLabel.Text = null;
 
-            // Set query editor styles, InfluxDB is SQL like, so use those
-            queryEditor.Styles[Style.Sql.Identifier].ForeColor = Color.Blue;
-            queryEditor.Styles[Style.Sql.String].ForeColor = Color.Red;
-            queryEditor.Styles[Style.Sql.Number].ForeColor = Color.Magenta;
-            queryEditor.Styles[Style.Sql.QuotedIdentifier].ForeColor = Color.Red;
+            queryEditor.ApplyConfiguration(KnownLanguages.SQL);
+            queryEditor.ShowHorizontalSplitters = false;
+            queryEditor.ShowVerticalSplitters = false;
+            queryEditor.FilterAutoCompleteItems = true;
+            queryEditor.AutoCompleteSingleLexem = false;
+            queryEditor.ContextChoiceOpen += QueryEditor_ContextChoiceOpen;
+            queryEditor.ContextChoiceUpdate += QueryEditor_ContextChoiceOpen;
+            queryEditor.KeyDown += QueryEditor_KeyDown;
+            queryEditor.KeyUp += QueryEditor_KeyUp;
         }
 
         #endregion Constructors
@@ -93,15 +100,7 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
         /// </summary>
         public void CommentSelectedLines()
         {
-            var lineRange = GetSelectedLineRange();
-            for (var lineIndex = lineRange.Start; lineIndex <= lineRange.End; lineIndex++)
-            {
-                var line = queryEditor.Lines[lineIndex];
-                var indentationLength = GetIndentationLength(line.Text);
-                queryEditor.InsertText(line.Position + indentationLength, "-- ");
-            }
-
-            SelectLineRange(lineRange.Start, lineRange.End);
+            ReplaceSelectedOrCurrentLines(text => Regex.Replace(text, @"(?m)^(?<indent>[ \t]*)", "${indent}-- "));
             queryEditor.Focus();
         }
 
@@ -111,28 +110,24 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
         /// </summary>
         public void UncommentSelectedLines()
         {
-            var lineRange = GetSelectedLineRange();
-            for (var lineIndex = lineRange.Start; lineIndex <= lineRange.End; lineIndex++)
-            {
-                var line = queryEditor.Lines[lineIndex];
-                var lineText = line.Text;
-                var indentationLength = GetIndentationLength(lineText);
-                if (lineText.Length < indentationLength + 2
-                    || lineText[indentationLength] != '-'
-                    || lineText[indentationLength + 1] != '-')
-                    continue;
-
-                var removalLength = 2;
-                if (lineText.Length > indentationLength + 2
-                    && (lineText[indentationLength + 2] == ' '
-                        || lineText[indentationLength + 2] == '\t'))
-                    removalLength++;
-
-                queryEditor.DeleteRange(line.Position + indentationLength, removalLength);
-            }
-
-            SelectLineRange(lineRange.Start, lineRange.End);
+            ReplaceSelectedOrCurrentLines(text => Regex.Replace(text, @"(?m)^(?<indent>[ \t]*)--[ \t]?", "${indent}"));
             queryEditor.Focus();
+        }
+
+        /// <summary>
+        /// Loads measurement/table names for completion. Field and tag names are loaded lazily
+        /// after a FROM clause identifies the active measurement.
+        /// </summary>
+        public async Task InitializeIntellisenseAsync()
+        {
+            try
+            {
+                await intellisense.LoadMeasurementsAsync(InfluxDbClient, Database);
+            }
+            catch
+            {
+                // Query execution must remain available if schema discovery is not permitted.
+            }
         }
 
         /// <summary>
@@ -202,40 +197,56 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
 
         private string GetQueryTextToExecute()
         {
-            var hasSelection = queryEditor.SelectionStart != queryEditor.SelectionEnd;
+            var hasSelection = !string.IsNullOrEmpty(queryEditor.SelectedText);
             return (hasSelection ? queryEditor.SelectedText : EditorText).Trim();
         }
 
-        private (int Start, int End) GetSelectedLineRange()
+        private void QueryEditor_ContextChoiceOpen(IContextChoiceController controller)
         {
-            var selectionStart = Math.Min(queryEditor.SelectionStart, queryEditor.SelectionEnd);
-            var selectionEnd = Math.Max(queryEditor.SelectionStart, queryEditor.SelectionEnd);
-            var startLine = queryEditor.LineFromPosition(selectionStart);
-            var endLine = queryEditor.LineFromPosition(selectionEnd);
-
-            // A selection ending at the beginning of the next line does not include
-            // that line, which matches Visual Studio and SQL Server behavior.
-            if (selectionEnd > selectionStart
-                && selectionEnd == queryEditor.Lines[endLine].Position)
-                endLine--;
-
-            return (startLine, Math.Max(startLine, endLine));
+            controller.Items.Clear();
+            controller.UseAutocomplete = true;
+            foreach (var item in intellisense.GetItems(InfluxDbClient, EditorText))
+                controller.Items.Add(item.Text, item.Description);
         }
 
-        private void SelectLineRange(int startLine, int endLine)
+        private void QueryEditor_KeyDown(object sender, KeyEventArgs e)
         {
-            var selectionStart = queryEditor.Lines[startLine].Position;
-            var selectionEnd = queryEditor.Lines[endLine].EndPosition;
-            queryEditor.SetSelection(selectionEnd, selectionStart);
+            if (e.Control && e.KeyCode == Keys.Space)
+            {
+                queryEditor.ShowContextChoice();
+                e.SuppressKeyPress = true;
+            }
         }
 
-        private static int GetIndentationLength(string lineText)
+        private async void QueryEditor_KeyUp(object sender, KeyEventArgs e)
         {
-            var indentationLength = 0;
-            while (indentationLength < lineText.Length
-                && (lineText[indentationLength] == ' ' || lineText[indentationLength] == '\t'))
-                indentationLength++;
-            return indentationLength;
+            if (e.KeyCode != Keys.Space && e.KeyCode != Keys.OemPeriod) return;
+            try
+            {
+                await intellisense.LoadContextSchemaAsync(InfluxDbClient, Database, EditorText);
+                if (Regex.IsMatch(queryEditor.CurrentLineText ?? string.Empty,
+                    @"\b(SELECT|FROM|WHERE|GROUP\s+BY|ORDER\s+BY)\s+$",
+                    RegexOptions.IgnoreCase))
+                    queryEditor.ShowContextChoice();
+            }
+            catch
+            {
+                // Some accounts cannot read schema metadata; static completion remains available.
+            }
+        }
+
+        private void ReplaceSelectedOrCurrentLines(Func<string, string> transform)
+        {
+            if (!string.IsNullOrEmpty(queryEditor.SelectedText))
+            {
+                queryEditor.SelectedText = transform(queryEditor.SelectedText);
+                return;
+            }
+
+            var lineNumber = queryEditor.CurrentLine;
+            var lineText = queryEditor.CurrentLineText ?? string.Empty;
+            queryEditor.SetSelection(1, lineNumber, lineText.Length + 1, lineNumber);
+            queryEditor.SelectedText = transform(lineText);
         }
 
         private static string MakeSafeFileName(string fileName)

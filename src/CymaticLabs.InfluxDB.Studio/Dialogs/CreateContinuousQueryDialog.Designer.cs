@@ -64,7 +64,7 @@
             this.resampleToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.resampleForToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.resampleEveryToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.queryEditor = new ScintillaNET.Scintilla();
+            this.queryEditor = new Syncfusion.Windows.Forms.Edit.EditControl();
             this.destinationInfo = new System.Windows.Forms.PictureBox();
             this.sourceInfo = new System.Windows.Forms.PictureBox();
             this.destinationToolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -424,7 +424,6 @@
             this.queryEditor.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.queryEditor.LexerName = "sql";
             this.queryEditor.Location = new System.Drawing.Point(12, 229);
             this.queryEditor.Name = "queryEditor";
             this.queryEditor.Size = new System.Drawing.Size(595, 186);
@@ -529,7 +528,7 @@
         private System.Windows.Forms.PictureBox resampleForInfo;
         private System.Windows.Forms.TextBox resampleForTextBox;
         private System.Windows.Forms.Label resampleForLabel;
-        private ScintillaNET.Scintilla queryEditor;
+        private Syncfusion.Windows.Forms.Edit.EditControl queryEditor;
         private System.Windows.Forms.PictureBox destinationInfo;
         private System.Windows.Forms.PictureBox sourceInfo;
         private System.Windows.Forms.ToolTip destinationToolTip;

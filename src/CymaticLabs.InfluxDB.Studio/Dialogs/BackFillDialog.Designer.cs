@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BackfillDialog));
-            this.queryEditor = new ScintillaNET.Scintilla();
+            this.queryEditor = new Syncfusion.Windows.Forms.Edit.EditControl();
             this.createButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.groupBox = new System.Windows.Forms.GroupBox();
@@ -78,7 +78,6 @@
             this.queryEditor.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.queryEditor.LexerName = "sql";
             this.queryEditor.Location = new System.Drawing.Point(12, 280);
             this.queryEditor.Name = "queryEditor";
             this.queryEditor.Size = new System.Drawing.Size(595, 145);
@@ -440,7 +439,7 @@
 
         #endregion
 
-        private ScintillaNET.Scintilla queryEditor;
+        private Syncfusion.Windows.Forms.Edit.EditControl queryEditor;
         private System.Windows.Forms.Button createButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.GroupBox groupBox;

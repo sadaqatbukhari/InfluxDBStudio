@@ -15,7 +15,7 @@ namespace CymaticLabs.InfluxDB.Studio
     /// <summary>
     /// The main application form.
     /// </summary>
-    public partial class AppForm : Form
+    public partial class AppForm : Syncfusion.WinForms.Controls.SfForm
     {
         #region Enums
         
@@ -104,6 +104,7 @@ namespace CymaticLabs.InfluxDB.Studio
             // Setup container for active database connection clients
             ActiveClients = new List<InfluxDbClient>();
             InitializeComponent();
+            menuStrip.Renderer = new Syncfusion.Windows.Forms.Tools.Office2016ToolStripRenderer();
 
             // Create dialog windows
             aboutDialog = new AboutDialog();
@@ -1527,6 +1528,7 @@ namespace CymaticLabs.InfluxDB.Studio
                 var queryControl = new QueryControl();
                 queryControl.InfluxDbClient = client;
                 queryControl.Database = database;
+                _ = queryControl.InitializeIntellisenseAsync();
                 queryControl.EditorText = connection.ServerVersion == InfluxDbServerVersion.InfluxDb3
                     ? string.Format("SELECT * FROM \"{0}\" WHERE time > now() - INTERVAL '5 minutes'", measurement)
                     : string.Format("SELECT * FROM \"{0}\" WHERE time > now() - 5m", measurement);

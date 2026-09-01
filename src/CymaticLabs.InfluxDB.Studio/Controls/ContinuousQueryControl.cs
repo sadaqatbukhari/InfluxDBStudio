@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ScintillaNET;
+using Syncfusion.Windows.Forms.Edit.Enums;
 using CymaticLabs.InfluxDB.Data;
 using CymaticLabs.InfluxDB.Studio.Dialogs;
 
@@ -39,10 +39,9 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
             createCqDialog = new CreateContinuousQueryDialog();
 
             // Set query editor styles, InfluxDB is SQL like, so use those
-            queryEditor.Styles[Style.Sql.Identifier].ForeColor = Color.Blue;
-            queryEditor.Styles[Style.Sql.String].ForeColor = Color.Red;
-            queryEditor.Styles[Style.Sql.Number].ForeColor = Color.Magenta;
-            queryEditor.Styles[Style.Sql.QuotedIdentifier].ForeColor = Color.Red;
+            queryEditor.ApplyConfiguration(KnownLanguages.SQL);
+            queryEditor.ShowHorizontalSplitters = false;
+            queryEditor.ShowVerticalSplitters = false;
 
             UpdateUIState();
         }

@@ -32,7 +32,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.killQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.queryEditor = new ScintillaNET.Scintilla();
+            this.queryEditor = new Syncfusion.Windows.Forms.Edit.EditControl();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.killQueryButton = new System.Windows.Forms.ToolStripButton();
             this.listView = new System.Windows.Forms.ListView();
@@ -85,7 +85,6 @@
             // queryEditor
             // 
             this.queryEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.queryEditor.LexerName = "sql";
             this.queryEditor.Location = new System.Drawing.Point(0, 0);
             this.queryEditor.Name = "queryEditor";
             this.queryEditor.ReadOnly = true;
@@ -173,7 +172,7 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private ScintillaNET.Scintilla queryEditor;
+        private Syncfusion.Windows.Forms.Edit.EditControl queryEditor;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem killQueryToolStripMenuItem;
         private System.Windows.Forms.ToolStrip toolStrip1;

@@ -28,148 +28,148 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.listView = new System.Windows.Forms.ListView();
-            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportAllCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportSelectedCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.tagsTextBox = new System.Windows.Forms.TextBox();
-            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.jSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.jSONToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextMenuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
-            this.splitContainer.Panel1.SuspendLayout();
-            this.splitContainer.Panel2.SuspendLayout();
-            this.splitContainer.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // listView
-            // 
-            this.listView.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            this.listView.ContextMenuStrip = this.contextMenuStrip;
-            this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView.FullRowSelect = true;
-            this.listView.GridLines = true;
-            this.listView.HideSelection = false;
-            this.listView.Location = new System.Drawing.Point(0, 0);
-            this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(688, 429);
-            this.listView.TabIndex = 0;
-            this.listView.UseCompatibleStateImageBehavior = false;
-            this.listView.View = System.Windows.Forms.View.Details;
-            this.listView.VirtualMode = true;
-            this.listView.CacheVirtualItems += new System.Windows.Forms.CacheVirtualItemsEventHandler(this.listView_CacheVirtualItems);
-            this.listView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listView_RetrieveVirtualItem);
+            contextMenuStrip = new Syncfusion.Windows.Forms.Tools.ContextMenuStripEx();
+            exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportAllCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            jSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportSelectedCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            jSONToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            resultsGrid = new Syncfusion.WinForms.DataGrid.SfDataGrid();
+            splitContainer = new System.Windows.Forms.SplitContainer();
+            tagsTextBox = new System.Windows.Forms.TextBox();
+            saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            contextMenuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)resultsGrid).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
+            splitContainer.Panel1.SuspendLayout();
+            splitContainer.Panel2.SuspendLayout();
+            splitContainer.SuspendLayout();
+            SuspendLayout();
             // 
             // contextMenuStrip
             // 
-            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportAllToolStripMenuItem,
-            this.exportSelectedToolStripMenuItem});
-            this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(155, 70);
+            contextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllToolStripMenuItem, exportSelectedToolStripMenuItem });
+            contextMenuStrip.MetroColor = System.Drawing.Color.FromArgb(204, 236, 249);
+            contextMenuStrip.Name = "contextMenuStrip";
+            contextMenuStrip.Size = new System.Drawing.Size(183, 52);
             // 
             // exportAllToolStripMenuItem
             // 
-            this.exportAllToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportAllCsvToolStripMenuItem,
-            this.jSONToolStripMenuItem});
-            this.exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
-            this.exportAllToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.exportAllToolStripMenuItem.Text = "Export All";
+            exportAllToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllCsvToolStripMenuItem, jSONToolStripMenuItem });
+            exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
+            exportAllToolStripMenuItem.Size = new System.Drawing.Size(182, 24);
+            exportAllToolStripMenuItem.Text = "Export All";
             // 
             // exportAllCsvToolStripMenuItem
             // 
-            this.exportAllCsvToolStripMenuItem.Name = "exportAllCsvToolStripMenuItem";
-            this.exportAllCsvToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.exportAllCsvToolStripMenuItem.Text = "CSV";
-            this.exportAllCsvToolStripMenuItem.Click += new System.EventHandler(this.exportAllCsvToolStripMenuItem_Click);
+            exportAllCsvToolStripMenuItem.Name = "exportAllCsvToolStripMenuItem";
+            exportAllCsvToolStripMenuItem.Size = new System.Drawing.Size(127, 26);
+            exportAllCsvToolStripMenuItem.Text = "CSV";
+            exportAllCsvToolStripMenuItem.Click += exportAllCsvToolStripMenuItem_Click;
+            //
+            // jSONToolStripMenuItem
+            //
+            jSONToolStripMenuItem.Name = "jSONToolStripMenuItem";
+            jSONToolStripMenuItem.Size = new System.Drawing.Size(127, 26);
+            jSONToolStripMenuItem.Text = "JSON";
+            jSONToolStripMenuItem.Click += jSONToolStripMenuItem_Click;
             // 
             // exportSelectedToolStripMenuItem
             // 
-            this.exportSelectedToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportSelectedCsvToolStripMenuItem,
-            this.jSONToolStripMenuItem1});
-            this.exportSelectedToolStripMenuItem.Name = "exportSelectedToolStripMenuItem";
-            this.exportSelectedToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.exportSelectedToolStripMenuItem.Text = "Export Selected";
+            exportSelectedToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportSelectedCsvToolStripMenuItem, jSONToolStripMenuItem1 });
+            exportSelectedToolStripMenuItem.Name = "exportSelectedToolStripMenuItem";
+            exportSelectedToolStripMenuItem.Size = new System.Drawing.Size(182, 24);
+            exportSelectedToolStripMenuItem.Text = "Export Selected";
             // 
             // exportSelectedCsvToolStripMenuItem
             // 
-            this.exportSelectedCsvToolStripMenuItem.Name = "exportSelectedCsvToolStripMenuItem";
-            this.exportSelectedCsvToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.exportSelectedCsvToolStripMenuItem.Text = "CSV";
-            this.exportSelectedCsvToolStripMenuItem.Click += new System.EventHandler(this.exportSelectedCsvToolStripMenuItem_Click);
+            exportSelectedCsvToolStripMenuItem.Name = "exportSelectedCsvToolStripMenuItem";
+            exportSelectedCsvToolStripMenuItem.Size = new System.Drawing.Size(127, 26);
+            exportSelectedCsvToolStripMenuItem.Text = "CSV";
+            exportSelectedCsvToolStripMenuItem.Click += exportSelectedCsvToolStripMenuItem_Click;
+            //
+            // jSONToolStripMenuItem1
+            //
+            jSONToolStripMenuItem1.Name = "jSONToolStripMenuItem1";
+            jSONToolStripMenuItem1.Size = new System.Drawing.Size(127, 26);
+            jSONToolStripMenuItem1.Text = "JSON";
+            jSONToolStripMenuItem1.Click += jSONToolStripMenuItem1_Click;
+            //
+            // resultsGrid
+            //
+            resultsGrid.AccessibleName = "Table";
+            resultsGrid.AllowEditing = false;
+            resultsGrid.AllowFiltering = true;
+            resultsGrid.AllowResizingColumns = true;
+            resultsGrid.AllowResizingHiddenColumns = true;
+            resultsGrid.ContextMenuStrip = contextMenuStrip;
+            resultsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            resultsGrid.FilterPopupMode = Syncfusion.WinForms.GridCommon.FilterPopupMode.AdvancedFilter;
+            resultsGrid.Location = new System.Drawing.Point(0, 0);
+            resultsGrid.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            resultsGrid.Name = "resultsGrid";
+            resultsGrid.PreviewRowHeight = 35;
+            resultsGrid.Size = new System.Drawing.Size(917, 661);
+            resultsGrid.TabIndex = 0;
             // 
             // splitContainer
             // 
-            this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer.Name = "splitContainer";
-            this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            splitContainer.Location = new System.Drawing.Point(0, 0);
+            splitContainer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            splitContainer.Name = "splitContainer";
+            splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer.Panel1
             // 
-            this.splitContainer.Panel1.Controls.Add(this.tagsTextBox);
+            splitContainer.Panel1.Controls.Add(tagsTextBox);
             // 
             // splitContainer.Panel2
             // 
-            this.splitContainer.Panel2.Controls.Add(this.listView);
-            this.splitContainer.Size = new System.Drawing.Size(688, 458);
-            this.splitContainer.SplitterDistance = 25;
-            this.splitContainer.TabIndex = 4;
+            splitContainer.Panel2.Controls.Add(resultsGrid);
+            splitContainer.Size = new System.Drawing.Size(917, 705);
+            splitContainer.SplitterDistance = 38;
+            splitContainer.SplitterWidth = 6;
+            splitContainer.TabIndex = 4;
             // 
             // tagsTextBox
             // 
-            this.tagsTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tagsTextBox.Location = new System.Drawing.Point(0, 0);
-            this.tagsTextBox.Multiline = true;
-            this.tagsTextBox.Name = "tagsTextBox";
-            this.tagsTextBox.ReadOnly = true;
-            this.tagsTextBox.Size = new System.Drawing.Size(688, 25);
-            this.tagsTextBox.TabIndex = 1;
-            // 
-            // jSONToolStripMenuItem
-            // 
-            this.jSONToolStripMenuItem.Name = "jSONToolStripMenuItem";
-            this.jSONToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.jSONToolStripMenuItem.Text = "JSON";
-            this.jSONToolStripMenuItem.Click += new System.EventHandler(this.jSONToolStripMenuItem_Click);
-            // 
-            // jSONToolStripMenuItem1
-            // 
-            this.jSONToolStripMenuItem1.Name = "jSONToolStripMenuItem1";
-            this.jSONToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-            this.jSONToolStripMenuItem1.Text = "JSON";
-            this.jSONToolStripMenuItem1.Click += new System.EventHandler(this.jSONToolStripMenuItem1_Click);
+            tagsTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            tagsTextBox.Location = new System.Drawing.Point(0, 0);
+            tagsTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            tagsTextBox.Multiline = true;
+            tagsTextBox.Name = "tagsTextBox";
+            tagsTextBox.ReadOnly = true;
+            tagsTextBox.Size = new System.Drawing.Size(917, 38);
+            tagsTextBox.TabIndex = 1;
             // 
             // QueryResultsControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.splitContainer);
-            this.Name = "QueryResultsControl";
-            this.Size = new System.Drawing.Size(688, 458);
-            this.contextMenuStrip.ResumeLayout(false);
-            this.splitContainer.Panel1.ResumeLayout(false);
-            this.splitContainer.Panel1.PerformLayout();
-            this.splitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
-            this.splitContainer.ResumeLayout(false);
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(splitContainer);
+            Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            Name = "QueryResultsControl";
+            Size = new System.Drawing.Size(917, 705);
+            contextMenuStrip.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)resultsGrid).EndInit();
+            splitContainer.Panel1.ResumeLayout(false);
+            splitContainer.Panel1.PerformLayout();
+            splitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer).EndInit();
+            splitContainer.ResumeLayout(false);
+            ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.ListView listView;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid resultsGrid;
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.TextBox tagsTextBox;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
+        private Syncfusion.Windows.Forms.Tools.ContextMenuStripEx contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem exportAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAllCsvToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportSelectedToolStripMenuItem;

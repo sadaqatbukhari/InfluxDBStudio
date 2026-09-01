@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfigLanguage name="InfluxQL" StartComment="--" CaseInsensitive="true">
+  <Extensions>
+    <Extension>.influxql</Extension>
+    <Extension>.flux</Extension>
+  </Extensions>
+
+  <Formats>
+    <Format Name="KeyWord" Color="Blue" Bold="true" />
+    <Format Name="Function" Color="DarkMagenta" Bold="false" />
+    <Format Name="String" Color="Red" />
+    <Format Name="Comment" Color="Green" Italic="true" />
+  </Formats>
+
+  <Lexems>
+    <!-- InfluxQL Keywords -->
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="SELECT" />
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="FROM" />
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="WHERE" />
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="GROUP BY" />
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="INTO" />
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="ORDER BY" />
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="LIMIT" />
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="SLIMIT" />
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="OFFSET" />
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="FILL" />
+    <Lexem TypeXML="KeyWord" FormatName="KeyWord" BeginBlock="TIME" />
+
+    <!-- InfluxQL Functions -->
+    <Lexem TypeXML="KeyWord" FormatName="Function" BeginBlock="MEAN" />
+    <Lexem TypeXML="KeyWord" FormatName="Function" BeginBlock="COUNT" />
+    <Lexem TypeXML="KeyWord" FormatName="Function" BeginBlock="SUM" />
+    <Lexem TypeXML="KeyWord" FormatName="Function" BeginBlock="FIRST" />
+    <Lexem TypeXML="KeyWord" FormatName="Function" BeginBlock="LAST" />
+    <Lexem TypeXML="KeyWord" FormatName="Function" BeginBlock="MIN" />
+    <Lexem TypeXML="KeyWord" FormatName="Function" BeginBlock="MAX" />
+    <Lexem TypeXML="KeyWord" FormatName="Function" BeginBlock="SPREAD" />
+    <Lexem TypeXML="KeyWord" FormatName="Function" BeginBlock="PERCENTILE" />
+  </Lexems>
+</ConfigLanguage>

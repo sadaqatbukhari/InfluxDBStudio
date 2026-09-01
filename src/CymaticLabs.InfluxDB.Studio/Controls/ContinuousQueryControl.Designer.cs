@@ -41,7 +41,7 @@
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.createCQToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dropCQToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.queryEditor = new ScintillaNET.Scintilla();
+            this.queryEditor = new Syncfusion.Windows.Forms.Edit.EditControl();
             this.toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
@@ -171,7 +171,6 @@
             // queryEditor
             // 
             this.queryEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.queryEditor.LexerName = "sql";
             this.queryEditor.Location = new System.Drawing.Point(0, 0);
             this.queryEditor.Name = "queryEditor";
             this.queryEditor.Size = new System.Drawing.Size(776, 271);
@@ -205,7 +204,7 @@
         private System.Windows.Forms.ToolStripButton dropCqButton;
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.ListView listView;
-        private ScintillaNET.Scintilla queryEditor;
+        private Syncfusion.Windows.Forms.Edit.EditControl queryEditor;
         private System.Windows.Forms.ColumnHeader columnHeader;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem dropCQToolStripMenuItem;

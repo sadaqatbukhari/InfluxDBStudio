@@ -6,7 +6,7 @@ and [Robomongo](https://robomongo.org/). InfluxDB Studio supports both InfluxDB 
 The 1.x integration uses InfluxData's official `InfluxDB.Client` package, while the 3.x
 integration uses the official `InfluxDB3.Client` package.
 
-## What's New in 3.0.2
+## Current Release Features
 
 * **InfluxDB 1.x and 3.x connections** - Choose the server generation when creating or editing a connection.
 * **Official InfluxData clients** - Both integrations use the standard packages maintained by InfluxData.
@@ -19,6 +19,9 @@ integration uses the official `InfluxDB3.Client` package.
 * **Millisecond timestamps** - The output window includes milliseconds in logged times.
 * **Modern Windows build** - The application targets .NET 10 and the installer includes the required runtime.
 * **Upgrade-safe settings** - Installing a newer version updates the application while retaining saved connections and preferences.
+* **Syncfusion desktop UI** - The query editors, result grid, main form, toolbar, status bar, and context menus use Syncfusion WinForms controls.
+* **InfluxQL IntelliSense** - Press `Ctrl+Space` for keywords and functions; connection-aware completion also includes measurements, fields, and tags.
+* **Resizable query workspace** - Drag the horizontal divider to allocate space between the query editor and results. Syncfusion's internal editor split handles are disabled to avoid a second, confusing resize mechanism.
 
 The following are planned features that are not yet implemented in the current version:
 
@@ -30,7 +33,7 @@ The following are planned features that are not yet implemented in the current v
 
 ## Table of Contents
 
- - [What's New in 3.0.2](#whats-new-in-302)
+ - [Current Release Features](#current-release-features)
  - [Installation](#installation)
  - [Managing Connections](#managing-connections)
    - [Connection Settings](#connection-settings)
@@ -222,9 +225,23 @@ The query editor supports both InfluxQL for InfluxDB 1.x and SQL for InfluxDB 3.
 * **Run the full editor** - Clear the selection and press `Ctrl+R`.
 * **Comment lines** - Select one or more lines and click the `--` toolbar button.
 * **Uncomment lines** - Select commented lines and click the `×--` toolbar button.
+* **Open IntelliSense** - Press `Ctrl+Space` to display completion suggestions.
+
+For InfluxDB 1.x, IntelliSense includes InfluxQL statements, functions, measurement names, and
+contextual field and tag names. Measurement names are loaded when the query tab opens. After a
+`FROM` clause identifies a measurement, its field and tag metadata are loaded on demand. If the
+connected account cannot read schema metadata, static keyword and function completion remains
+available. The static InfluxQL list is loaded from `Resources/InfluxQL.xml`, making the XML file
+the single editable source for both keyword and function suggestions. InfluxDB 3.x query tabs use
+a SQL-oriented completion list and table metadata.
 
 The save and open commands are located in the **Query** menu rather than below the query editor,
 leaving more vertical space for query text and results.
+
+Drag the visible horizontal divider below the query status line to resize the query and result
+areas. Both panels keep a minimum usable height. The small internal split handles normally shown
+by Syncfusion EditControl are disabled because the workspace divider provides the intended resize
+behavior.
 
 ### Working with Large Query Results
 

@@ -17,13 +17,20 @@
     <LangVersion>latest</LangVersion>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
     <NoWarn>$(NoWarn);WFO1000;CA1416</NoWarn>
+    <SyncfusionVersion>34.2.3</SyncfusionVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="InfluxDB.Client" Version="5.1.0" />
     <PackageReference Include="InfluxDB3.Client" Version="1.9.0" />
-    <PackageReference Include="Scintilla5.NET" Version="7.0.0" />
+    <PackageReference Include="Syncfusion.Edit.Windows" Version="$(SyncfusionVersion)" />
+    <PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="$(SyncfusionVersion)" />
+    <PackageReference Include="Syncfusion.Tools.Windows" Version="$(SyncfusionVersion)" />
     <PackageReference Include="log4net" Version="3.3.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\InfluxQL.xml" />
   </ItemGroup>
 </Project>
