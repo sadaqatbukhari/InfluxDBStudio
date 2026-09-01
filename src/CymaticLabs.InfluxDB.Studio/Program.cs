@@ -1,4 +1,4 @@
-﻿using Syncfusion.Licensing;
+using Syncfusion.Licensing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,10 @@ namespace CymaticLabs.InfluxDB.Studio
 
             if (!string.IsNullOrEmpty(licenseKey))
             {
-                SyncfusionLicenseProvider.RegisterLicense(licenseKey);
+                foreach (var key in licenseKey.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    SyncfusionLicenseProvider.RegisterLicense(key.Trim());
+                }
             }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
