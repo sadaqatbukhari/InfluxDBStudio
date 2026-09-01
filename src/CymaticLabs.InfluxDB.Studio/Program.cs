@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Syncfusion.Licensing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,12 @@ namespace CymaticLabs.InfluxDB.Studio
         [STAThread]
         static void Main()
         {
+            string licenseKey = Environment.GetEnvironmentVariable("SYNCFUSION_LICENSE_KEY");
+
+            if (!string.IsNullOrEmpty(licenseKey))
+            {
+                SyncfusionLicenseProvider.RegisterLicense(licenseKey);
+            }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new AppForm());
