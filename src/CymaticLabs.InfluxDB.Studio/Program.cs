@@ -2,6 +2,7 @@ using Syncfusion.Licensing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -15,14 +16,18 @@ namespace CymaticLabs.InfluxDB.Studio
         [STAThread]
         static void Main()
         {
-            string licenseKey = Environment.GetEnvironmentVariable("SYNCFUSION_LICENSE_KEY");
+            string licenseKey = Assembly.GetExecutingAssembly()
+                .GetCustomAttributes<AssemblyMetadataAttribute>()
+                .FirstOrDefault(attribute => attribute.Key == "SyncfusionLicenseKey")?.Value;
 
-            if (!string.IsNullOrEmpty(licenseKey))
+            if (string.IsNullOrWhiteSpace(licenseKey))
             {
-                foreach (var key in licenseKey.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    SyncfusionLicenseProvider.RegisterLicense(key.Trim());
-                }
+                licenseKey = Environment.GetEnvironmentVariable("SYNCFUSION_LICENSE_KEY");
+            }
+
+            if (!string.IsNullOrWhiteSpace(licenseKey))
+            {
+                SyncfusionLicenseProvider.RegisterLicense(licenseKey.Trim());
             }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

@@ -499,3 +499,7 @@ To import application settings, including all configured InfluxDB server connect
 ## License
 
 Code and documentation are available according to the *MIT* License (see [LICENSE](https://github.com/sadaqatbukhari/InfluxDBStudio/blob/master/LICENSE)).
+
+InfluxDB Studio uses commercial Syncfusion WinForms components. Those components are licensed by
+Syncfusion and are not covered by this repository's MIT License. See
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for licensing and redistribution information.

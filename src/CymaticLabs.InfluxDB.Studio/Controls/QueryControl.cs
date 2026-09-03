@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -52,6 +52,9 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
             resultsLabel.Text = null;
 
             queryEditor.ApplyConfiguration(KnownLanguages.SQL);
+            queryEditor.BorderStyle = BorderStyle.FixedSingle;
+            queryEditor.UseXPStyleBorder = false;
+            queryEditor.StatusBarSettings.VisualStyle = Syncfusion.Windows.Forms.Tools.Controls.StatusBar.VisualStyle.Metro;
             queryEditor.ShowHorizontalSplitters = false;
             queryEditor.ShowVerticalSplitters = false;
             queryEditor.FilterAutoCompleteItems = true;

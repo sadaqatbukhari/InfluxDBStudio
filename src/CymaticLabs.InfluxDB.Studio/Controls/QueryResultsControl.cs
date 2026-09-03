@@ -26,6 +26,8 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
         public QueryResultsControl()
         {
             InitializeComponent();
+            Syncfusion.WinForms.Controls.SfSkinManager.SetVisualStyle(resultsGrid, "Office2019Colorful");
+            contextMenuStrip.Style = Syncfusion.Windows.Forms.Tools.ContextMenuStripEx.ContextMenuStyle.Office2016White;
             resultsGrid.AutoGenerateColumns = false;
             resultsGrid.AllowEditing = false;
             resultsGrid.EnableDataVirtualization = true;

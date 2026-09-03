@@ -6,6 +6,10 @@ $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $versionFile = Join-Path $repositoryRoot 'Version.props'
 $bundleProject = Join-Path $PSScriptRoot 'InfluxDBStudio.Bundle\InfluxDBStudio.Bundle.wixproj'
 
+if ([string]::IsNullOrWhiteSpace($env:SYNCFUSION_LICENSE_KEY)) {
+    throw 'SYNCFUSION_LICENSE_KEY must be configured before building a public release.'
+}
+
 [xml]$versionDocument = Get-Content -LiteralPath $versionFile
 $currentVersion = [Version]$versionDocument.Project.PropertyGroup.Version
 $nextVersion = '{0}.{1}.{2}' -f $currentVersion.Major, $currentVersion.Minor,

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
@@ -56,6 +56,9 @@ namespace CymaticLabs.InfluxDB.Studio.Dialogs
 
             // Set query editor styles, InfluxDB is SQL like, so use those
             queryEditor.ApplyConfiguration(KnownLanguages.SQL);
+            queryEditor.BorderStyle = BorderStyle.FixedSingle;
+            queryEditor.UseXPStyleBorder = false;
+            queryEditor.StatusBarSettings.VisualStyle = Syncfusion.Windows.Forms.Tools.Controls.StatusBar.VisualStyle.Metro;
             queryEditor.ShowHorizontalSplitters = false;
             queryEditor.ShowVerticalSplitters = false;
         }

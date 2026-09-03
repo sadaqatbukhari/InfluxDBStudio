@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -104,7 +104,14 @@ namespace CymaticLabs.InfluxDB.Studio
             // Setup container for active database connection clients
             ActiveClients = new List<InfluxDbClient>();
             InitializeComponent();
+            Syncfusion.WinForms.Controls.SfSkinManager.SetVisualStyle(this, "Office2019Colorful");
             menuStrip.Renderer = new Syncfusion.Windows.Forms.Tools.Office2016ToolStripRenderer();
+            toolStrip.VisualStyle = Syncfusion.Windows.Forms.Tools.ToolStripExStyle.Office2016White;
+            statusStrip.VisualStyle = Syncfusion.Windows.Forms.Tools.StatusStripExStyle.Office2016White;
+            connectionsContextMenu.Style = Syncfusion.Windows.Forms.Tools.ContextMenuStripEx.ContextMenuStyle.Office2016White;
+            databaseContextMenu.Style = Syncfusion.Windows.Forms.Tools.ContextMenuStripEx.ContextMenuStyle.Office2016White;
+            measurementContextMenu.Style = Syncfusion.Windows.Forms.Tools.ContextMenuStripEx.ContextMenuStyle.Office2016White;
+            tabContextMenuStrip.Style = Syncfusion.Windows.Forms.Tools.ContextMenuStripEx.ContextMenuStyle.Office2016White;
 
             // Create dialog windows
             aboutDialog = new AboutDialog();
