@@ -673,21 +673,21 @@
             //
             // commentQueryButton
             //
-            commentQueryButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            commentQueryButton.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold);
+            commentQueryButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            commentQueryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             commentQueryButton.Name = "commentQueryButton";
             commentQueryButton.Size = new System.Drawing.Size(29, 24);
-            commentQueryButton.Text = "--";
+            commentQueryButton.Text = "Comment Selection";
             commentQueryButton.ToolTipText = "Comment Selected Lines";
             commentQueryButton.Click += commentQueryButton_Click;
             //
             // uncommentQueryButton
             //
-            uncommentQueryButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            uncommentQueryButton.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold);
+            uncommentQueryButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            uncommentQueryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             uncommentQueryButton.Name = "uncommentQueryButton";
-            uncommentQueryButton.Size = new System.Drawing.Size(36, 24);
-            uncommentQueryButton.Text = "×--";
+            uncommentQueryButton.Size = new System.Drawing.Size(29, 24);
+            uncommentQueryButton.Text = "Uncomment Selection";
             uncommentQueryButton.ToolTipText = "Uncomment Selected Lines";
             uncommentQueryButton.Click += uncommentQueryButton_Click;
             //

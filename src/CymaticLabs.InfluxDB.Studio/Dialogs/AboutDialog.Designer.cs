@@ -29,154 +29,179 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutDialog));
-            this.influxDBLogo = new System.Windows.Forms.PictureBox();
-            this.titleLabel = new System.Windows.Forms.Label();
-            this.versionLabel = new System.Windows.Forms.Label();
-            this.closeButton = new System.Windows.Forms.Button();
-            this.descriptionLabel = new System.Windows.Forms.Label();
-            this.projectLabel = new System.Windows.Forms.Label();
-            this.copyrightLabel = new System.Windows.Forms.Label();
-            this.warranyLabel = new System.Windows.Forms.Label();
-            this.projectLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.influxDataNetLabel = new System.Windows.Forms.Label();
-            this.influxDataNetLinkLabel = new System.Windows.Forms.LinkLabel();
-            ((System.ComponentModel.ISupportInitialize)(this.influxDBLogo)).BeginInit();
-            this.SuspendLayout();
+            influxDBLogo = new System.Windows.Forms.PictureBox();
+            titleLabel = new System.Windows.Forms.Label();
+            versionLabel = new System.Windows.Forms.Label();
+            closeButton = new System.Windows.Forms.Button();
+            descriptionLabel = new System.Windows.Forms.Label();
+            projectLabel = new System.Windows.Forms.Label();
+            copyrightLabel = new System.Windows.Forms.Label();
+            warranyLabel = new System.Windows.Forms.Label();
+            projectLinkLabel = new System.Windows.Forms.LinkLabel();
+            influxDataNetLabel = new System.Windows.Forms.Label();
+            influxDataNetLinkLabel = new System.Windows.Forms.LinkLabel();
+            influxDb3ClientLinkLabel = new System.Windows.Forms.LinkLabel();
+            ((System.ComponentModel.ISupportInitialize)influxDBLogo).BeginInit();
+            SuspendLayout();
             // 
             // influxDBLogo
             // 
-            this.influxDBLogo.Image = global::CymaticLabs.InfluxDB.Studio.Properties.Resources.influxdb_logo;
-            this.influxDBLogo.Location = new System.Drawing.Point(12, 12);
-            this.influxDBLogo.Name = "influxDBLogo";
-            this.influxDBLogo.Size = new System.Drawing.Size(165, 165);
-            this.influxDBLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.influxDBLogo.TabIndex = 0;
-            this.influxDBLogo.TabStop = false;
+            influxDBLogo.Image = Properties.Resources.influxdb_logo;
+            influxDBLogo.Location = new System.Drawing.Point(16, 18);
+            influxDBLogo.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            influxDBLogo.Name = "influxDBLogo";
+            influxDBLogo.Size = new System.Drawing.Size(220, 254);
+            influxDBLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            influxDBLogo.TabIndex = 0;
+            influxDBLogo.TabStop = false;
             // 
             // titleLabel
             // 
-            this.titleLabel.AutoSize = true;
-            this.titleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.titleLabel.Location = new System.Drawing.Point(189, 13);
-            this.titleLabel.Name = "titleLabel";
-            this.titleLabel.Size = new System.Drawing.Size(112, 16);
-            this.titleLabel.TabIndex = 1;
-            this.titleLabel.Text = "InfluxDB Studio";
+            titleLabel.AutoSize = true;
+            titleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+            titleLabel.Location = new System.Drawing.Point(252, 20);
+            titleLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            titleLabel.Name = "titleLabel";
+            titleLabel.Size = new System.Drawing.Size(140, 20);
+            titleLabel.TabIndex = 1;
+            titleLabel.Text = "InfluxDB Studio";
             // 
             // versionLabel
             // 
-            this.versionLabel.AutoSize = true;
-            this.versionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.versionLabel.Location = new System.Drawing.Point(298, 13);
-            this.versionLabel.Name = "versionLabel";
-            this.versionLabel.Size = new System.Drawing.Size(52, 16);
-            this.versionLabel.TabIndex = 1;
-            this.versionLabel.Text = "0.0.0.0";
+            versionLabel.AutoSize = true;
+            versionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+            versionLabel.Location = new System.Drawing.Point(413, 20);
+            versionLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            versionLabel.Name = "versionLabel";
+            versionLabel.Size = new System.Drawing.Size(64, 20);
+            versionLabel.TabIndex = 1;
+            versionLabel.Text = "0.0.0.0";
             // 
             // closeButton
             // 
-            this.closeButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.closeButton.Location = new System.Drawing.Point(363, 204);
-            this.closeButton.Name = "closeButton";
-            this.closeButton.Size = new System.Drawing.Size(75, 23);
-            this.closeButton.TabIndex = 2;
-            this.closeButton.Text = "Close";
-            this.closeButton.UseVisualStyleBackColor = true;
+            closeButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            closeButton.Location = new System.Drawing.Point(591, 345);
+            closeButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            closeButton.Name = "closeButton";
+            closeButton.Size = new System.Drawing.Size(100, 35);
+            closeButton.TabIndex = 2;
+            closeButton.Text = "Close";
+            closeButton.UseVisualStyleBackColor = true;
             // 
             // descriptionLabel
             // 
-            this.descriptionLabel.AutoSize = true;
-            this.descriptionLabel.Location = new System.Drawing.Point(189, 40);
-            this.descriptionLabel.Name = "descriptionLabel";
-            this.descriptionLabel.Size = new System.Drawing.Size(167, 13);
-            this.descriptionLabel.TabIndex = 3;
-            this.descriptionLabel.Text = "Visual InfluxDB Management Tool";
+            descriptionLabel.AutoSize = true;
+            descriptionLabel.Location = new System.Drawing.Point(252, 62);
+            descriptionLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            descriptionLabel.Name = "descriptionLabel";
+            descriptionLabel.Size = new System.Drawing.Size(233, 20);
+            descriptionLabel.TabIndex = 3;
+            descriptionLabel.Text = "Visual InfluxDB Management Tool";
             // 
             // projectLabel
             // 
-            this.projectLabel.AutoSize = true;
-            this.projectLabel.Location = new System.Drawing.Point(189, 65);
-            this.projectLabel.Name = "projectLabel";
-            this.projectLabel.Size = new System.Drawing.Size(133, 13);
-            this.projectLabel.TabIndex = 3;
-            this.projectLabel.Text = "Visit the project website on";
+            projectLabel.AutoSize = true;
+            projectLabel.Location = new System.Drawing.Point(252, 138);
+            projectLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            projectLabel.Name = "projectLabel";
+            projectLabel.Size = new System.Drawing.Size(58, 20);
+            projectLabel.TabIndex = 3;
+            projectLabel.Text = "Project:";
             // 
             // copyrightLabel
             // 
-            this.copyrightLabel.AutoSize = true;
-            this.copyrightLabel.Location = new System.Drawing.Point(189, 90);
-            this.copyrightLabel.Name = "copyrightLabel";
-            this.copyrightLabel.Size = new System.Drawing.Size(250, 13);
-            this.copyrightLabel.TabIndex = 3;
-            this.copyrightLabel.Text = "Copyright 2017 Michael Everett. All  rights reserved.";
+            copyrightLabel.AutoSize = true;
+            copyrightLabel.Location = new System.Drawing.Point(252, 100);
+            copyrightLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            copyrightLabel.Name = "copyrightLabel";
+            copyrightLabel.Size = new System.Drawing.Size(324, 20);
+            copyrightLabel.TabIndex = 3;
+            copyrightLabel.Text = "Developed and maintained by Sadaqat Hussain";
             // 
             // warranyLabel
             // 
-            this.warranyLabel.Location = new System.Drawing.Point(189, 140);
-            this.warranyLabel.Name = "warranyLabel";
-            this.warranyLabel.Size = new System.Drawing.Size(250, 61);
-            this.warranyLabel.TabIndex = 3;
-            this.warranyLabel.Text = "The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRANT" +
-    "Y OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARITCULAR PURPOSE.";
+            warranyLabel.Location = new System.Drawing.Point(252, 223);
+            warranyLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            warranyLabel.Name = "warranyLabel";
+            warranyLabel.Size = new System.Drawing.Size(439, 94);
+            warranyLabel.TabIndex = 3;
+            warranyLabel.Text = "The program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.";
             // 
             // projectLinkLabel
             // 
-            this.projectLinkLabel.AutoSize = true;
-            this.projectLinkLabel.Location = new System.Drawing.Point(319, 65);
-            this.projectLinkLabel.Name = "projectLinkLabel";
-            this.projectLinkLabel.Size = new System.Drawing.Size(38, 13);
-            this.projectLinkLabel.TabIndex = 4;
-            this.projectLinkLabel.TabStop = true;
-            this.projectLinkLabel.Text = "Github";
-            this.projectLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.projectLinkLabel_LinkClicked);
+            projectLinkLabel.AutoSize = true;
+            projectLinkLabel.Location = new System.Drawing.Point(317, 138);
+            projectLinkLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            projectLinkLabel.Name = "projectLinkLabel";
+            projectLinkLabel.Size = new System.Drawing.Size(297, 20);
+            projectLinkLabel.TabIndex = 4;
+            projectLinkLabel.TabStop = true;
+            projectLinkLabel.Text = "github.com/sadaqatbukhari/InfluxDBStudio";
+            projectLinkLabel.LinkClicked += projectLinkLabel_LinkClicked;
             // 
             // influxDataNetLabel
             // 
-            this.influxDataNetLabel.AutoSize = true;
-            this.influxDataNetLabel.Location = new System.Drawing.Point(189, 115);
-            this.influxDataNetLabel.Name = "influxDataNetLabel";
-            this.influxDataNetLabel.Size = new System.Drawing.Size(66, 13);
-            this.influxDataNetLabel.TabIndex = 3;
-            this.influxDataNetLabel.Text = "Powered by ";
+            influxDataNetLabel.AutoSize = true;
+            influxDataNetLabel.Location = new System.Drawing.Point(252, 177);
+            influxDataNetLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            influxDataNetLabel.Name = "influxDataNetLabel";
+            influxDataNetLabel.Size = new System.Drawing.Size(126, 20);
+            influxDataNetLabel.TabIndex = 3;
+            influxDataNetLabel.Text = "Official packages:";
             // 
             // influxDataNetLinkLabel
             // 
-            this.influxDataNetLinkLabel.AutoSize = true;
-            this.influxDataNetLinkLabel.Location = new System.Drawing.Point(249, 115);
-            this.influxDataNetLinkLabel.Name = "influxDataNetLinkLabel";
-            this.influxDataNetLinkLabel.Size = new System.Drawing.Size(75, 13);
-            this.influxDataNetLinkLabel.TabIndex = 4;
-            this.influxDataNetLinkLabel.TabStop = true;
-            this.influxDataNetLinkLabel.Text = "InfluxDB.Client";
-            this.influxDataNetLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.influxDataNetLinkLabel_LinkClicked);
+            influxDataNetLinkLabel.AutoSize = true;
+            influxDataNetLinkLabel.Location = new System.Drawing.Point(384, 177);
+            influxDataNetLinkLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            influxDataNetLinkLabel.Name = "influxDataNetLinkLabel";
+            influxDataNetLinkLabel.Size = new System.Drawing.Size(138, 20);
+            influxDataNetLinkLabel.TabIndex = 4;
+            influxDataNetLinkLabel.TabStop = true;
+            influxDataNetLinkLabel.Text = "InfluxDB.Client (1.x)";
+            influxDataNetLinkLabel.LinkClicked += influxDataNetLinkLabel_LinkClicked;
+            //
+            // influxDb3ClientLinkLabel
+            //
+            influxDb3ClientLinkLabel.AutoSize = true;
+            influxDb3ClientLinkLabel.Location = new System.Drawing.Point(535, 177);
+            influxDb3ClientLinkLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            influxDb3ClientLinkLabel.Name = "influxDb3ClientLinkLabel";
+            influxDb3ClientLinkLabel.Size = new System.Drawing.Size(146, 20);
+            influxDb3ClientLinkLabel.TabIndex = 4;
+            influxDb3ClientLinkLabel.TabStop = true;
+            influxDb3ClientLinkLabel.Text = "InfluxDB3.Client (3.x)";
+            influxDb3ClientLinkLabel.LinkClicked += influxDb3ClientLinkLabel_LinkClicked;
             // 
             // AboutDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(450, 239);
-            this.Controls.Add(this.influxDataNetLinkLabel);
-            this.Controls.Add(this.projectLinkLabel);
-            this.Controls.Add(this.warranyLabel);
-            this.Controls.Add(this.copyrightLabel);
-            this.Controls.Add(this.influxDataNetLabel);
-            this.Controls.Add(this.projectLabel);
-            this.Controls.Add(this.descriptionLabel);
-            this.Controls.Add(this.closeButton);
-            this.Controls.Add(this.versionLabel);
-            this.Controls.Add(this.titleLabel);
-            this.Controls.Add(this.influxDBLogo);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "AboutDialog";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "About InfluxDB Studio";
-            this.Load += new System.EventHandler(this.AboutDialog_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.influxDBLogo)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(707, 398);
+            Controls.Add(influxDb3ClientLinkLabel);
+            Controls.Add(influxDataNetLinkLabel);
+            Controls.Add(projectLinkLabel);
+            Controls.Add(warranyLabel);
+            Controls.Add(copyrightLabel);
+            Controls.Add(influxDataNetLabel);
+            Controls.Add(projectLabel);
+            Controls.Add(descriptionLabel);
+            Controls.Add(closeButton);
+            Controls.Add(versionLabel);
+            Controls.Add(titleLabel);
+            Controls.Add(influxDBLogo);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "AboutDialog";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            Text = "About InfluxDB Studio";
+            Load += AboutDialog_Load;
+            ((System.ComponentModel.ISupportInitialize)influxDBLogo).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
@@ -193,5 +218,6 @@
         private System.Windows.Forms.LinkLabel projectLinkLabel;
         private System.Windows.Forms.Label influxDataNetLabel;
         private System.Windows.Forms.LinkLabel influxDataNetLinkLabel;
+        private System.Windows.Forms.LinkLabel influxDb3ClientLinkLabel;
     }
 }

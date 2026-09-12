@@ -20,7 +20,8 @@ namespace CymaticLabs.InfluxDB.Studio.Controls
         {
             "SELECT", "FROM", "WHERE", "GROUP BY", "ORDER BY", "LIMIT", "OFFSET", "AS",
             "AND", "OR", "NOT", "IN", "IS NULL", "IS NOT NULL", "ASC", "DESC", "DISTINCT",
-            "COUNT()", "AVG()", "SUM()", "MIN()", "MAX()", "DATE_BIN()", "NOW()"
+            "COUNT()", "AVG()", "SUM()", "MIN()", "MAX()", "DATE_BIN()", "NOW()",
+            "SHOW", "QUERIES", "SHARD", "SHARDS"
         }).ToArray();
 
         private readonly HashSet<string> measurements = new(StringComparer.OrdinalIgnoreCase);

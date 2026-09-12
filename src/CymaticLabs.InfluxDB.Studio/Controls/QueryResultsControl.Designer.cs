@@ -29,6 +29,10 @@
         private void InitializeComponent()
         {
             contextMenuStrip = new Syncfusion.Windows.Forms.Tools.ContextMenuStripEx();
+            copyCellToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            copyRowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            copySelectedRowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            copySeparator = new System.Windows.Forms.ToolStripSeparator();
             exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             exportAllCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             jSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,10 +54,37 @@
             // contextMenuStrip
             // 
             contextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
-            contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllToolStripMenuItem, exportSelectedToolStripMenuItem });
+            contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { copyCellToolStripMenuItem, copyRowToolStripMenuItem, copySelectedRowsToolStripMenuItem, copySeparator, exportAllToolStripMenuItem, exportSelectedToolStripMenuItem });
             contextMenuStrip.MetroColor = System.Drawing.Color.FromArgb(204, 236, 249);
             contextMenuStrip.Name = "contextMenuStrip";
-            contextMenuStrip.Size = new System.Drawing.Size(183, 52);
+            contextMenuStrip.Size = new System.Drawing.Size(288, 130);
+            contextMenuStrip.Opening += contextMenuStrip_Opening;
+            //
+            // copyCellToolStripMenuItem
+            //
+            copyCellToolStripMenuItem.Name = "copyCellToolStripMenuItem";
+            copyCellToolStripMenuItem.Size = new System.Drawing.Size(287, 24);
+            copyCellToolStripMenuItem.Text = "Copy Cell Value";
+            copyCellToolStripMenuItem.Click += copyCellToolStripMenuItem_Click;
+            //
+            // copyRowToolStripMenuItem
+            //
+            copyRowToolStripMenuItem.Name = "copyRowToolStripMenuItem";
+            copyRowToolStripMenuItem.Size = new System.Drawing.Size(287, 24);
+            copyRowToolStripMenuItem.Text = "Copy Row with Headers";
+            copyRowToolStripMenuItem.Click += copyRowToolStripMenuItem_Click;
+            //
+            // copySelectedRowsToolStripMenuItem
+            //
+            copySelectedRowsToolStripMenuItem.Name = "copySelectedRowsToolStripMenuItem";
+            copySelectedRowsToolStripMenuItem.Size = new System.Drawing.Size(287, 24);
+            copySelectedRowsToolStripMenuItem.Text = "Copy Selected Rows with Headers";
+            copySelectedRowsToolStripMenuItem.Click += copySelectedRowsToolStripMenuItem_Click;
+            //
+            // copySeparator
+            //
+            copySeparator.Name = "copySeparator";
+            copySeparator.Size = new System.Drawing.Size(284, 6);
             // 
             // exportAllToolStripMenuItem
             // 
@@ -170,6 +201,10 @@
         private System.Windows.Forms.TextBox tagsTextBox;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private Syncfusion.Windows.Forms.Tools.ContextMenuStripEx contextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem copyCellToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyRowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copySelectedRowsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator copySeparator;
         private System.Windows.Forms.ToolStripMenuItem exportAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAllCsvToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportSelectedToolStripMenuItem;

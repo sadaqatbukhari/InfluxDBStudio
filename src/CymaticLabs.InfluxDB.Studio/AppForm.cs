@@ -104,6 +104,8 @@ namespace CymaticLabs.InfluxDB.Studio
             // Setup container for active database connection clients
             ActiveClients = new List<InfluxDbClient>();
             InitializeComponent();
+            commentQueryButton.Image = ToolbarIconFactory.CreateCommentSelectionIcon(false);
+            uncommentQueryButton.Image = ToolbarIconFactory.CreateCommentSelectionIcon(true);
             Syncfusion.WinForms.Controls.SfSkinManager.SetVisualStyle(this, "Office2019Colorful");
             menuStrip.Renderer = new Syncfusion.Windows.Forms.Tools.Office2016ToolStripRenderer();
             toolStrip.VisualStyle = Syncfusion.Windows.Forms.Tools.ToolStripExStyle.Office2016White;
@@ -1537,8 +1539,8 @@ namespace CymaticLabs.InfluxDB.Studio
                 queryControl.Database = database;
                 _ = queryControl.InitializeIntellisenseAsync();
                 queryControl.EditorText = connection.ServerVersion == InfluxDbServerVersion.InfluxDb3
-                    ? string.Format("SELECT * FROM \"{0}\" WHERE time > now() - INTERVAL '5 minutes'", measurement)
-                    : string.Format("SELECT * FROM \"{0}\" WHERE time > now() - 5m", measurement);
+                    ? string.Format("SELECT * FROM \"{0}\" WHERE time > now() - INTERVAL '5 minutes' LIMIT 100", measurement)
+                    : string.Format("SELECT * FROM \"{0}\" WHERE time > now() - 5m LIMIT 100", measurement);
 
                 // Add a tab with a query control in it
                 tabControl.AddTabWithControl(connection.Name + "." + database, queryControl, Properties.Resources.RunQuery);

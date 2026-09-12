@@ -37,19 +37,32 @@ namespace CymaticLabs.InfluxDB.Studio.Dialogs
         // Launch project link
         private void projectLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/CymaticLabs/InfluxDBStudio");
+            OpenLink("https://github.com/sadaqatbukhari/InfluxDBStudio");
         }
 
-        // Launch the official InfluxDB .NET client link
+        // Launch the official InfluxDB 1.x .NET client package link
         private void influxDataNetLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(
-                "https://github.com/influxdata/influxdb-client-csharp") { UseShellExecute = true });
+            OpenLink("https://www.nuget.org/packages/InfluxDB.Client");
+        }
+
+        // Launch the official InfluxDB 3.x .NET client package link
+        private void influxDb3ClientLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            OpenLink("https://www.nuget.org/packages/InfluxDB3.Client");
         }
 
         #endregion Event Handlers
 
         #region Methods
+
+        private static void OpenLink(string url)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url)
+            {
+                UseShellExecute = true
+            });
+        }
 
         #endregion Methods
     }
